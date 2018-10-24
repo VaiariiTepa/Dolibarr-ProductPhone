@@ -14,10 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
---
--- Structure de la table `llx_product_phone_raw`
---
-
 CREATE TABLE IF NOT EXISTS `llx_product_phone_raw` (
   `rowid` int(11) NOT NULL AUTO_INCREMENT,
   `DeviceName` varchar(200) NOT NULL,
@@ -85,79 +81,15 @@ CREATE TABLE IF NOT EXISTS `llx_product_phone_raw` (
   `camera` varchar(35) DEFAULT NULL,
   `gpu` varchar(35) DEFAULT NULL,
   `multitouch` varchar(40) DEFAULT NULL,
-  `_4g_bands` text,
+  `_4g_bands` text(256) DEFAULT NULL,
   `display` varchar(95) DEFAULT NULL,
   `nfc` varchar(13) DEFAULT NULL,
   `performance` varchar(220) DEFAULT NULL,
   `build` varchar(220) DEFAULT NULL,
   `price` varchar(100) DEFAULT NULL,
   `sar` varchar(100) DEFAULT NULL,
-  `tms` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `fk_user` int(11) NOT NULL,
+  `tms` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`rowid`),
   UNIQUE KEY `rowid` (`rowid`),
-  UNIQUE KEY `unk_DeviceName_Brand` (`DeviceName`,`Brand`) COMMENT 'contrainte d''uniciter entre DeviceName et Brand'
-)
-
-
-
---
--- Structure de la table `llx_product_phone`
---
-
-CREATE TABLE IF NOT EXISTS `llx_product_phone` (
-  `rowid` int(11) NOT NULL AUTO_INCREMENT,
-  `os_name` varchar(100) NOT NULL,
-  `os_version` varchar(100) NOT NULL,
-  `os_version_name` varchar(100) NOT NULL,
-  `screen_resolution` varchar(100) NOT NULL,
-  `phone_size` varchar(100) NOT NULL,
-  `phone_weight` varchar(100) NOT NULL,
-  `primary_camera_resolution` varchar(100) NOT NULL,
-  `secondary_camera_resolution` varchar(100) NOT NULL,
-  `cpu_number` varchar(255) NOT NULL,
-  `cpu_speed` varchar(100) NOT NULL,
-  `ram` varchar(255) NOT NULL,
-  `interne_memory` varchar(255) NOT NULL,
-  `connexion_type` text NOT NULL,
-  `battery_capacity` varchar(100) NOT NULL,
-  `phone_color` varchar(255) NOT NULL,
-  `sim1_format` varchar(100) NOT NULL,
-  `sim2_format` varchar(100) NOT NULL,
-  `dual_sim` varchar(200) NOT NULL,
-  `fk_product_phone_raw` varchar(255) NOT NULL,
-  `tms` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`rowid`),
-  UNIQUE KEY `fk_product_phone_raw` (`fk_product_phone_raw`)
-);
-
-
---
--- Structure de la table `llx_product_phone_product`
---
-
-CREATE TABLE IF NOT EXISTS `llx_product_phone_product` (
-  `rowid` int(11) NOT NULL AUTO_INCREMENT,
-  `fk_product_phone_raw` int(11) NOT NULL,
-  `fk_product` int(11) NOT NULL,
-  `tms` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `fk_user` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`rowid`),
-  UNIQUE KEY `unk_productphone_product` (`fk_product_phone_raw`,`fk_product`)
-);
-
-
---
--- Structure de la table `llx_c_product_phone_filter`
---
-
-CREATE TABLE IF NOT EXISTS `llx_c_product_phone_filter` (
-  `rowid` int(11) NOT NULL AUTO_INCREMENT,
-  `field` varchar(250) NOT NULL,
-  `type` enum('select','text','checkbox','button','radio') CHARACTER SET utf8 NOT NULL,
-  `label` varchar(100) NOT NULL,
-  `value` text CHARACTER SET utf8 NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '0',
-  `sort_order` int(11) NOT NULL,
-  PRIMARY KEY (`rowid`)
+  UNIQUE KEY `uk_brand_devicename` (`Brand`,`DeviceName`)
 );

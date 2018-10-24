@@ -110,6 +110,9 @@ $_productPhone = new ProductPhone($db);
 $_get_filter = $_productPhone->get_filter();
 
 $t_field_filter = $_productPhone->get_field_filter();
+
+$t_productPhone_product = $_productPhone->get_productPhoneProduct();
+
 /*
  * View
  */
@@ -163,161 +166,193 @@ print '<div class="tabBar">';
 
     print '<br>';
 
-    /**********************EXTRAFIELD--FILTER***********************/
-    print '<form action="'.$_SERVER['PHP_SELF'].'?action=creer" method="POST">';
-        print '<table class="noborder" width="100%">';
-            print '<thead>';
-                print '<tr class="liste_titre">';
-                    print '<th width="16%">Ajouter un nouveau filtre de recherche</th>'; // f.langs
-                    print '<th width="16%"></th>';
-                    print '<th width="16%"></th>';
-                    print '<th width="16%"></th>';
-                    print '<th width="16%"></th>';
-                    print '<th width="16%"></th>';
-                    print '<th width="16%"></th>';
-                print '</tr>';
-            print '</thead>';
-            print '<tbody>';
-                print '<tr class="pair">';
-                    print '<td width="16%">Field</td>'; // voir f.langs
-                    print '<td width="16%">Type</td>'; // voir f.langs
-                    print '<td width="16%">Label</td>'; // voir f.langs
-                    print '<td width="16%">Valeur</td>'; // voir f.langs
-                    print '<td width="16%">Active</td>'; // voir f.langs
-                    print '<td width="16%">Ordre</td>'; // voir f.langs
-                    print '<td width="16%">Action</td>'; // voir f.langs
-                print '</tr>';
-                print '<tr class="pair">';
-
-                    //field
-                    print '<td width="16%">';
-                        print '<select id="select_field" name="field" value="'.$p_field.'">';
-                            // == FIELD -- Nom de filtre == //
-                            foreach ($t_field_filter as $field_filter){
-                                print '<option value="llx_product_phone.'.$field_filter['Field'].'">'.$field_filter['Field'].'</option>';
-                            }
-                        print '</select>';
-                    print '</td>';
-
-                    //type de filtre (select/checkbox/input/button/radio)
-                    // stocker les differents type d input
-                    print '<td width="16%">';
-                        print '<select name="type" value="'.$p_type.'">';
-                            print '<option value="select">Select</option>';
-                            print '<option value="checkbox">Checkbox</option>';
-                            print '<option value="text">Textarea</option>';
-                            print '<option value="radio">Radio</option>';
-                        print '</select>';
-                    print '</td>';
-
-                    //label
-                    print '<td width="16%">';
-                        print '<textarea type="text" name="label" value="'.$p_label.'" required></textarea>';
-                    print '</td>';
-
-                    //valeur
-                    print '<td>';
-                        print '<textarea id="valeur" type="text" name="value" value="'.$p_valeur.'" required></textarea>';
-                    print '</td>';
-
-                    //active -- inactive
-                    print '<td width="16%">';
-                        print '<select name="active" value="'.$p_active.'">';
-                            print '<option value="1">actif</option>';
-                            print '<option value="0">inactif</option>';
-                        print '</select>';
-                    print '</td>';
-
-                    //ordre de trie
-                    print '<td width="16%"><input type="text" name="order" value="'.$p_order.'" required/></td>';
-
-                    //bouton ajouter
-                    print '<td width="16%"><input type="submit" value="Ajouter" class="btn btn-success"></td>';
-                print '</tr>';
-            print '</tbody>';
-        print '</table>';
-    print '</form>';
-
-    /************************Affichage TABLE FILTRE************************/
-
-    print '<table class="noborder" width="100%">';
-        print '<thead>';
-            print '<tr class="liste_titre">';
-                print '<th>Field</th>';
-                print '<th>Type</th>';
-                print '<th>Label</th>';
-                print '<th>Valeur</th>';
-                print '<th>Active</th>';
-                print '<th>Ordre</th>';
-                print '<th>Modification</th>';
-            print '</tr>';
-        print '</thead>';
-        print '<tbody>';
-            $parity = TRUE;
-            foreach ($_get_filter as $filter){
-            $parity = !$parity;
-            ///////////////////////////////////////////////////////////////////
-            /*====== EN COURS DE MODIFICATION LLX_C_PRODUCTPHONE_FILTER======*/
-            ///////////////////////////////////////////////////////////////////
-            if ($p_action == 'form_modifier' && $filter['rowid'] == $p_rowid) {
-                print '<form action="'.$_SERVER['PHP_SELF'].'?action=modifier" method="POST">';
-                print '<tr class="'.($parity?'pair':'impair').'">';
-                print '<input type="hidden" name="rowid" value="'.$filter['rowid'].'">';
-                print '<td><input type="text" name="field" value="'.$filter['field'].'" required/></td>';
-                print '<td width="16%">';
-                    print '<select name="type" value="'.$filter['type'].'">';
-                        print '<option value="select">select</option>';
-                        print '<option value="checkbox">checkbox</option>';
-                        print '<option value="text">input</option>';
-                    print '</select>';
-                print '</td>';
-                print '<td><input type="text" name="label" value="'.$filter['label'].'" required/></td>';
-                print '<td></td>';
-                print '<td><input type="text" name="active" value="'.$filter['active'].'" required/></td>';
-                print '<td><input type="text" name="order" value="'.$filter['sort_order'].'" required/></td>';
-                print '<td>';
-                print '<input type="submit" value="Valider" class="btn btn-success">';
-                print '</td>';
-                print '</tr>';
-                print '</form>';
-
-            }else{
-
-            //////////////////////////////////////////////////////
-            /*======= AFFICHAGE NORMAL LLX_C_PRODUCTPHONE_FILTER*/
-
-            //////////////////////////////////////////////////////
-                print '<tr class="'.($parity?'pair':'impair').'">';
-                    print '<td>'.substr($filter['field'],18).'</td>';
-                    print '<td>'.$filter['type'].'</td>';
-                    print '<td>'.$filter['label'].'</td>';
-
-                        print '<td>'.$filter['value'].'</td>';
-                        print '<td>'.$filter['active'].'</td>';
-                        print '<td>'.$filter['sort_order'].'</td>';
-
-                        //BOUTON MODIFIER
-                        print '<td>';
-                        print '<a href="'.dol_buildpath('/productphone/admin/config.php', 1).'?action=form_modifier&rowid='.$filter['rowid'].'" class="btn btn-light">';
-                        print 'filtre';
-                        print '</a>';
-                        print '<a href="'.dol_buildpath('/productphone/admin/config.php', 1).'?action=ajouter_valeur&rowid='.$filter['rowid'].'" class="btn btn-light">';
-                        print 'valeur';
-                        print '</a>';
-                        print '<a href="'.dol_buildpath('/productphone/admin/config.php', 1).'?action=supprimer&rowid='.$filter['rowid'].'" class="btn btn-light">';
-                        print 'supprimer';
-                        print '</a>';
-                        print '</td>';
-
-
-                    //BOUTON AJOUTER VALEUR
-                print '</tr>';
-            print '</tbody>';
-            }
-        }
-    print '</table>';
-
 //div fermante "TAB BAR"
+print '</div>';
+
+print '<div class="tabBar">';
+
+
+/**********************EXTRAFIELD--FILTER***********************/
+print '<form action="'.$_SERVER['PHP_SELF'].'?action=creer" method="POST">';
+print '<table class="noborder" width="100%">';
+print '<thead>';
+print '<tr class="liste_titre">';
+print '<th width="16%">Ajouter un nouveau filtre de recherche</th>'; // f.langs
+print '<th width="16%"></th>';
+print '<th width="16%"></th>';
+print '<th width="16%"></th>';
+print '<th width="16%"></th>';
+print '<th width="16%"></th>';
+print '<th width="16%"></th>';
+print '</tr>';
+print '</thead>';
+print '<tbody>';
+print '<tr class="pair">';
+print '<td width="16%">Field</td>'; // voir f.langs
+print '<td width="16%">Type</td>'; // voir f.langs
+print '<td width="16%">Label</td>'; // voir f.langs
+print '<td width="16%">Valeur</td>'; // voir f.langs
+print '<td width="16%">Active</td>'; // voir f.langs
+print '<td width="16%">Ordre</td>'; // voir f.langs
+print '<td width="16%">Action</td>'; // voir f.langs
+print '</tr>';
+print '<tr class="pair">';
+
+//field
+print '<td width="16%">';
+print '<select id="select_field" name="field" value="'.$p_field.'">';
+// == FIELD -- Nom de filtre == //
+foreach ($t_field_filter as $field_filter){
+
+    print '<option value="'.$field_filter['Field'].'">'.$field_filter['Field'].'</option>';
+}
+print '</select>';
+print '</td>';
+
+//type de filtre (select/checkbox/input/button/radio)
+// stocker les differents type d input
+print '<td width="16%">';
+print '<select name="type" value="'.$p_type.'">';
+print '<option value="select">Select</option>';
+print '<option value="checkbox">Checkbox</option>';
+print '<option value="text">Textarea</option>';
+print '<option value="radio">Radio</option>';
+print '</select>';
+print '</td>';
+
+//label
+print '<td width="16%">';
+print '<textarea type="text" name="label" value="'.$p_label.'" required></textarea>';
+print '</td>';
+
+//valeur
+print '<td>';
+print '<textarea id="valeur" type="text" name="value" value="'.$p_valeur.'" required></textarea>';
+print '</td>';
+
+//active -- inactive
+print '<td width="16%">';
+print '<select name="active" value="'.$p_active.'">';
+print '<option value="1">actif</option>';
+print '<option value="0">inactif</option>';
+print '</select>';
+print '</td>';
+
+//ordre de trie
+print '<td width="16%"><input type="text" name="order" value="'.$p_order.'" required/></td>';
+
+//bouton ajouter
+print '<td width="16%"><input type="submit" value="Ajouter" class="btn btn-success"></td>';
+print '</tr>';
+print '</tbody>';
+print '</table>';
+print '</form>';
+
+/************************Affichage TABLE FILTRE************************/
+
+print '<table class="noborder" width="100%">';
+print '<thead>';
+print '<tr class="liste_titre">';
+print '<th>Field</th>';
+print '<th>Type</th>';
+print '<th>Label</th>';
+print '<th>Valeur</th>';
+print '<th>Active</th>';
+print '<th>Ordre</th>';
+print '<th>Action</th>';
+print '</tr>';
+print '</thead>';
+print '<tbody>';
+$parity = TRUE;
+foreach ($_get_filter as $filter){
+    $parity = !$parity;
+    ///////////////////////////////////////////////////////////////////
+    /*====== EN COURS DE MODIFICATION LLX_C_PRODUCTPHONE_FILTER======*/
+    ///////////////////////////////////////////////////////////////////
+    if ($p_action == 'form_modifier' && $filter['rowid'] == $p_rowid) {
+        print '<form action="'.$_SERVER['PHP_SELF'].'?action=modifier" method="POST">';
+        print '<tr class="'.($parity?'pair':'impair').'">';
+        print '<input type="hidden" name="rowid" value="'.$filter['rowid'].'">';
+        print '<td><input type="text" name="field" value="'.$filter['field'].'" required/></td>';
+        print '<td width="16%">';
+        print '<select name="type" value="'.$filter['type'].'">';
+        print '<option value="select">select</option>';
+        print '<option value="checkbox">checkbox</option>';
+        print '<option value="text">input</option>';
+        print '</select>';
+        print '</td>';
+        print '<td><input type="text" name="label" value="'.$filter['label'].'" required/></td>';
+        print '<td></td>';
+        print '<td width="16%">';
+        print '<select name="active" value="'.$p_active.'">';
+        print '<option value="1">actif</option>';
+        print '<option value="0">inactif</option>';
+        print '</select>';
+        print '</td>';
+        print '<td><input type="text" name="order" value="'.$filter['sort_order'].'" required/></td>';
+        print '<td>';
+        print '<input type="submit" value="Valider" class="btn btn-success">';
+        print '</td>';
+        print '</tr>';
+        print '</form>';
+
+    }else{
+        //////////////////////////////////////////////////////
+        /*======= AFFICHAGE NORMAL LLX_C_PRODUCTPHONE_FILTER*/
+        //////////////////////////////////////////////////////
+        print '<tr class="'.($parity?'pair':'impair').'">';
+
+        //Field
+        print '<td>'.$filter['field'].'</td>';
+
+        //Type
+        print '<td>'.$filter['type'].'</td>';
+
+        //Label
+        print '<td>'.$filter['label'].'</td>';
+
+        //Valeur
+        print '<td>'.$filter['value'].'</td>';
+        $test = array_diff($_get_filter,$t_productPhone_product);
+
+        //Active
+        if($filter['active'] == '1'){
+            print '<td>ACTIF</td>';
+        }else{
+            print '<td>INACTIF</td>';
+        }
+
+        //Ordre
+        print '<td>'.$filter['sort_order'].'</td>';
+
+        //BOUTON MODIFIER
+        print '<td>';
+            print '<div>';
+                print '<a href="'.dol_buildpath('/productphone/admin/config.php', 1).'?action=form_modifier&rowid='.$filter['rowid'].'" class="btn btn-light">';
+                print 'modifier';
+                print '</a>';
+            print '</div>';
+            print '<div>';
+                print '<a href="'.dol_buildpath('/productphone/admin/config.php', 1).'?action=supprimer&rowid='.$filter['rowid'].'" class="btn btn-light">';
+                print 'supprimer';
+                print '</a>';
+            print '</div>';
+            print '<div>';
+                print '<a href="config.php?action=refresh">rafraichir</a>';
+            print '</div>';
+        print '</td>';
+
+        //BOUTON AJOUTER VALEUR
+        print '</tr>';
+        print '</tbody>';
+    }
+}
+print '</table>';
+
+print '<div align="right">';
+print '<a href="config.php?action=refreshAll">Tous rafraichir</a>';
+print '</div>';
+
 print '</div>';
 
 // Page end

@@ -114,11 +114,11 @@ function productPhoneCardPrepareHead($t_param = array())
 function generateInputHTMLofFilter($_filter)
 {
     global $conf, $langs, $db;
-
     $t_return = array();
     if ($_filter) {
         foreach ($_filter as $k_filter => $v_filter) {
 
+            //Si le champs "active" est a 1, alors continuer
             if (!$v_filter['active']) {
                 continue;
             }
@@ -126,7 +126,8 @@ function generateInputHTMLofFilter($_filter)
             $input_id = 'filter_' . $v_filter['field'];
             $input_name = $v_filter['field'];
             $label_name = $v_filter['label'];
-            $attr_id_name = 'name="' . $input_name . ' " id="' . $input_id . '"';
+            $value_name = $v_filter['t_value'];
+            $attr_id_name = 'name="' . $input_name . '" id="' . $input_id . '"';
             $attr_checkbox_id_name = 'name="' . $input_name . '[]" id="' . $input_id . '"';
 
             $label = '';
@@ -136,47 +137,50 @@ function generateInputHTMLofFilter($_filter)
 
             // input
             switch ($v_filter['type']) {
+
+                // ok
                 case 'select':
                     $label .= '<label for="' . $input_id . '">' . $label_name . '</label>';
                     $input .= '<select ' . $attr_id_name . '>';
                     foreach ($v_filter['t_value'] as $value) {
-                        // var_dump($p_value, $value);
-                        $attr_selected = (isset($v_filter['t_value']) && $v_filter['t_value'] == $value);
-                        $input .= '<option value="' . $value . '" ' . ($attr_selected ? 'selected' : '') . ' >' . $value . '</option>';
+                        $selected = (isset($p_value) && ($p_value == $value) ? ' selected' : "");
+                        $input .= '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
                     }
                     $input .= '</select>';
                     break;
 
+                // ok
                 case 'radio':
                     $label .= '<label>' . $label_name . '</label>';
                     foreach ($v_filter['t_value'] as $value) {
-                        $attr_checked = (isset($v_filter['t_value']) && $v_filter['t_value'] == $value ? GETPOST($v_filter['t_value']) : $value); // a revoir pas bon
-                        $input .= '<label><input type="' . $v_filter['type'] . '" ' . $attr_id_name . ' value="' . $value . '" ' . ($attr_checked ? 'checked="checked"' : '') . '>' . $value . '</label><br>';
+                        $checked = (isset($p_value) && ($p_value == $value) ? ' checked="checked"' : "");
+                        $input .= '<label><input type="' . $v_filter['type'] . '" ' . $attr_id_name . ' value="' . $value . '"' . $checked . '>' . $value . '</label><br>';
                     }
                     break;
 
+                // ok
                 case 'checkbox':
                     $label .= '<label>' . $label_name . '</label>';
-                    var_dump($p_value);
                     foreach ($v_filter['t_value'] as $value) {
-                        $attr_checked = (($p_value && in_array($value, $p_value)) ? 'checked="checked"' : '');
-                        $input .= '<label><input type="' . $v_filter['type'] . '" ' . $attr_checkbox_id_name . '' . $attr_checked . ' value="' . $value . '">' . $value . '</label><br>';
+                        $checked = (($p_value && in_array($value, $p_value)) ? 'checked="checked"' : '');
+                        $input .= '<label><input type="' . $v_filter['type'] . '" ' . $attr_checkbox_id_name . ' value="' . $value . '"' . $checked . '>' . $value . '</label><br>';
                     }
                     break;
-
-                // case 'button':
-                //     $label .= '<label for="' . $input_id . '">' . $label_name . '</label>';
-                //     foreach ($v_filter['t_value'] as $value) {
-                //         $input .= '<button type="' . $v_filter['type'] . '" ' . $attr_id_name . ' value="' . $value . '">' . $value . '</button>';
-                //     }
-                //     break;
 
                 default:
                     $label .= '<label for="' . $input_id . '">' . $label_name . '</label>';
                     foreach ($v_filter['t_value'] as $value) {
-                        $input .= '<textarea ' . $input_name . '>' . (isset($value) ? $value : '') . '</textarea>';
+                        $input .= '<label><textarea ' . $input_name . '>' . (isset($p_value) && $p_value == $value ? $value : '') . '</textarea></label>';
                     }
                     break;
+
+                    // case 'button':
+                    //     $label .= '<label for="' . $input_id . '">' . $label_name . '</label>';
+                    //     foreach ($v_filter['t_value'] as $value) {
+                    //         $input .= '<button type="' . $v_filter['type'] . '" ' . $attr_id_name . ' value="' . $value . '">' . $value . '</button>';
+                    //     }
+                    //     break;
+
             }
             $t_return[$v_filter['field']] = array('label' => $label, 'input' => $input);
         }
