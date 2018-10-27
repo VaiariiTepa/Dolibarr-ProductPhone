@@ -33,26 +33,28 @@ foreach($t_filter as $field){
   $t_param[ $field['field'] ] = GETPOST($field['field']);
 }
 
-
-$t_field = array();
-
-if($t_field){
-    if($p_filter_selected){
-       //Si un nouveau filtre crée et selectionner, Alors rajouter a ce tableau
-       $t_field[] = $p_filter_selected;
-    }
-}
+//tableaux valeur par défault
+$t_paramKey = array(
+    'Nom OS'=>'os_name',
+    'Nom Vresion'=>'os_version_name',
+    'Numéro Version'=>'os_version',
+    'Nombre Coeur'=>'cpu_number',
+    'Résolution écrant'=>'screen_resolution',
+);
 
 // Generate the html of the different fields of the search filter
 $t_input = generateInputHTMLofFilter($t_filter);
 
-//var_dump($t_input);
 
 // If action is equal to search else
 if($action == 'search') {
     $t_search_productphone = $_productPhone->search_productphone($t_param);
 }
 
+//Si bouton reset selectionner, alors remetre a zero le filtre d'affichage
+if($action == 'reset'){
+    $t_param = array();
+}
 
 /*
  * VIEW
@@ -79,30 +81,39 @@ print '<div id="global_div">';
         //*******************************************************************************************************//
             if($t_search_productphone){
                 foreach ($t_search_productphone as $key=>$value){
+
                     //==== TITRE ====//
                     print '<h4>';
-                    print '<div id="bandeau">';
-                        print '<div id="header_accordion">';
-                            print '<div>';
-                                print '<b class="DeviceName">'.$value['Device']['DeviceName'].' </b>';
-                                print ' date de sortie: ' . $value['Device']['announced'];
-                            print '</div>';
+                        print '<div>';
+
+                        //Affichage par default avec mis en page spéciaux
+                        print '<b class="DeviceName">'.$value['Device']['DeviceName'].' </b>';
+                        print ' date de sortie: ' . $value['Device']['announced'];
+
                         print '</div>';
-                    print '</div>';
                         print '<div id="cadre_title">';
+                            print '<div id="cadreDefault">';
+                                //Affichage par défault sans mis en page spécial
+                                foreach($t_paramKey as $fkey=>$paramKey){
+                                    if ($paramKey !== 'DeviceName' && $paramKey !== 'announced'){
+                                        print $fkey.': '.$value['Device'][$paramKey].' | ';
+                                    }
+                                }
+                            print '</div>';
                             print '<div id="cadre">';
-                                    //==== HEADER CARACTERISTIQUE == LABEL + VALUE filter ==//
-
-
-                        //FOREACH permetant d'affiché les filtres qui on été selectionner
-
-                    foreach ($t_param as $nkey=>$param){
-                        if(!empty($param)){
-                          $label = (!empty($t_filter[$nkey]) ? $t_filter[$nkey]['label'] : $nkey );
-                          print $label.': '.$value['Device'][$nkey].' | ';
-                        }
-                    }
-
+                                //FOREACH permetant d'affiché les filtres qui on été selectionner
+                                foreach ($t_param as $nkey=>$param){
+                                    if(!empty($param)){
+                                        foreach ($value['Device'] as $key => $Pvalue){
+                                            var_dump($value['Device'][$key]);
+                                            if ($Pvalue !== $value['Device'][$key]){
+                                                $label = (!empty($t_filter[$nkey]) ? $t_filter[$nkey]['label'] : $nkey );
+                                                //lire le nom des caractéristique par default
+                                                print $label.': '.$value['Device'][$key].' | ';
+                                            }
+                                        }
+                                    }
+                                }
                             print '</div>';
                         print '</div>';
                     print '</h4>';
@@ -130,18 +141,20 @@ print '<div id="global_div">';
                             print '<tbody>';
                             $parity = TRUE;
                                 foreach($value['DeviceAssociated'] AS $ref) {
-                                    $parity =! $parity;
-                                print '<tr class="'.($parity?'pair':'impair').'">';
-                                    print '<td width="25%">';
-                                        print $ref['Ref'];
-                                    print '</td>';
-                                    print '<td width="25%">';
-                                        print $ref['label'];
-                                    print '</td>';
-                                    print '<td width="25%">';
-                                        print $ref['Prix_TTC'].'xpf TTC';
-                                    print '</td>';
-                                print '</tr>';
+                                    if($ref['tosell'] === '1' ){
+                                        $parity =! $parity;
+                                        print '<tr class="'.($parity?'pair':'impair').'">';
+                                            print '<td width="25%">';
+                                                print $ref['ref_product'];
+                                            print '</td>';
+                                            print '<td width="25%">';
+                                                print $ref['label'];
+                                            print '</td>';
+                                            print '<td width="25%">';
+                                                print price($ref['Prix_TTC']).' '.$langs->trans('SellingPriceTTC');
+                                            print '</td>';
+                                        print '</tr>';
+                                    }
                                 }
                             print '</tbody>';
                         print '</table>';
@@ -157,13 +170,20 @@ print '<br>';
 // LATERAL BAR SEARCH / FILTER OF CATALOG
 print '<div class="vertical-menu">';
 
+    //Permet de remettre a Zero le filtre
+    print '<form action="index.php">';
+        print '<input type="submit" name="action" value="Reset">';
+    print '</form>';
+
     //Formulaire filtre selectionner
     print '<form>';
-    foreach($t_input as $input){
-        print $input['label'];
-        print '<br>';
-        print $input['input'];
-        print '<br>';
+    if($t_input){
+        foreach($t_input as $input){
+            print $input['label'];
+            print '<br>';
+            print $input['input'];
+            print '<br>';
+        }
     }
     print '<button type="submit" name="action" value="search">Rechercher</button>';
     print '</form>';

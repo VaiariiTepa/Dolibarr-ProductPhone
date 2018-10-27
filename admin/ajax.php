@@ -126,18 +126,18 @@ switch($p_action){
             $t_response['status'] = 'error';
         }
         break;
-
-    case 'show_filter_selected':
-        $_ProductPhone = new ProductPhone($db);
-        $filter = GETPOST('filter');
-        $t_ProductPhone = $_ProductPhone->search_productphone($filter);
-        if ($t_ProductPhone){
-            $t_response['data']['response'] = json_encode($t_ProductPhone);
-            $t_response['status'] = 'succes';
-        }else {
-            $t_response['status'] = 'error';
-        }
-        break;
+//
+//    case 'show_filter_selected':
+//        $_ProductPhone = new ProductPhone($db);
+//        $filter = GETPOST('filter');
+//        $t_ProductPhone = $_ProductPhone->search_productphone($filter);
+//        if ($t_ProductPhone){
+//            $t_response['data']['response'] = json_encode($t_ProductPhone);
+//            $t_response['status'] = 'succes';
+//        }else {
+//            $t_response['status'] = 'error';
+//        }
+//        break;
 }
 
 echo json_encode($t_response);

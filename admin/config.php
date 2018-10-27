@@ -106,12 +106,30 @@ if ($p_action == 'supprimer'){
     }
 }
 
+//j'instancie la class ProductPhone
 $_productPhone = new ProductPhone($db);
+
+//Récupèr tout les champs+valeur de la table llx_c_product_phone_filter
 $_get_filter = $_productPhone->get_filter();
 
+//Récupèr les valeurs du champ "Value" de la table llx_c_product_phone_filter
+$t_get_valueOfValue = $_productPhone->get_valueOfValue();
+
+//Récupèr les champs de la table llx_c_product_phone_filter
 $t_field_filter = $_productPhone->get_field_filter();
 
-$t_productPhone_product = $_productPhone->get_productPhoneProduct();
+//Récupèr les valeurs de la table llx_product_phone_product
+$t_productPhone = $_productPhone->get_all_productPhone();
+
+
+
+//******************//
+//  ZONE DE TEST
+
+
+//  FIN ZONE DE TEST
+//******************//
+
 
 /*
  * View
@@ -142,7 +160,7 @@ print '<div class="tabBar">';
                 //*****header Vide pour faire de la place*****//
                 print '<th align="right" width="30"></th>'."\n";
                 print '<th align="right" width="30">Action</th>'."\n";
-//                print '<th width="80">&nbsp;</th></tr>'."\n";
+                //print '<th width="80">&nbsp;</th></tr>'."\n";
                 //*****FIN header Vide pour faire de la place**//
 
         print '</thead>';
@@ -169,7 +187,7 @@ print '<div class="tabBar">';
 //div fermante "TAB BAR"
 print '</div>';
 
-print '<div class="tabBar">';
+print '<div class="tabBar" width="100%" >';
 
 
 /**********************EXTRAFIELD--FILTER***********************/
@@ -248,6 +266,9 @@ print '</tbody>';
 print '</table>';
 print '</form>';
 
+//ESPACES ENTRE LA CREATION ET L'AFFICHAGE DES FILTRES
+print '<br>';
+
 /************************Affichage TABLE FILTRE************************/
 
 print '<table class="noborder" width="100%">';
@@ -313,8 +334,8 @@ foreach ($_get_filter as $filter){
 
         //Valeur
         print '<td>'.$filter['value'].'</td>';
-        $test = array_diff($_get_filter,$t_productPhone_product);
-
+//        $test = array_diff($_get_filter,$t_productPhone);
+//        var_dump($test)
         //Active
         if($filter['active'] == '1'){
             print '<td>ACTIF</td>';
@@ -363,7 +384,6 @@ llxFooter();
 <script>
 
     $(document).ready(function(){
-        var product_phone_raw;
         var selected_field;
         $('#select_field').on('change',function(){
             selected_field = $('#select_field').val();
@@ -386,13 +406,11 @@ llxFooter();
                 show_value_of_filter(data);
                 },
                 'error': function(){
-                console.log('la requête n\'a pas aboutie');
                 }
         });
     }
 
     function show_value_of_filter(data){
-        console.log(data.data.FieldValue);
         $('#valeur').val(
             data.data.FieldValue
         );

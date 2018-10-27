@@ -46,11 +46,13 @@ class ProductPhone //extends CommonObject
     var $device_name;
 
     //Liste les champs llx_product_phone
+    //soit 19 champs
+    //Utiliser dans la methode "feed_productPhone_from_productPhoneRaw()"
     var $t_field_product_phone = array(
         'os_name', 'os_version', 'os_version_name', 'screen_resolution', 'phone_size'
     , 'phone_weight', 'primary_camera_resolution', 'secondary_camera_resolution', 'cpu_number', 'cpu_speed'
     , 'ram', 'interne_memory', 'connexion_type', 'battery_capacity', 'phone_color'
-    , 'sim1_format', 'sim2_format', 'dual_sim', 'fk_product_phone_raw'
+    , 'sim1_format', 'sim2_format', 'dual_sim' , 'fk_product_phone_raw'
     );
 
     // Liste les champs llx_product_phone_raw
@@ -144,10 +146,9 @@ class ProductPhone //extends CommonObject
         $sql .= implode(',', $t_sql_part);
         $sql .= " ON DUPLICATE KEY UPDATE " . implode(', ', $t_valUpd);
 
-        $this->db->begin();
-        $resql = $this->db->query($sql);
-        $this->db->commit();
-
+        $begin = $this->db->begin();
+        $query = $this->db->query($sql);
+        $commit = $this->db->commit();
 
     }
 
@@ -168,12 +169,195 @@ class ProductPhone //extends CommonObject
         $sql = "INSERT INTO ".MAIN_DB_PREFIX."product_phone (";
         $sql.= implode(', ',$t_data_field_product_phone);
         $sql.= ")";
-        $sql.= " SELECT";
+        $sql.= " SELECT DISTINCT";
+
+        //os_name 1
+        $sql.= " 
+        CASE 
+        WHEN (os LIKE \"%Microsoft%\") THEN \"Windows Phone\"
+        ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(os,',',1),' ',1) 
+        END AS os_name";
+
+        //version os 2
+        $sql.= "
+        ,CASE 
+    	WHEN (os LIKE \"%v%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",3),\" \",-2),\",\",-1),\"v\",-1)
+        WHEN (os LIKE \"%Android 4%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"%Android 5%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"%Android 6%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"%Android 7%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"%Android 8%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"%Android 9%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"%Wear%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-3),\"(\",1)
+        WHEN (os LIKE \"%Blackberry%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-1),\",\",1)
+        WHEN (os LIKE \"%Blackberry%\" AND os LIKE \"%.%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-1),\",\",1)
+        WHEN (os LIKE \"%Blackberry%\" AND os LIKE \"%, upgradable %\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-2),\",\",1)
+        WHEN (os LIKE \"%fox OS%\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        WHEN (os LIKE \"%Mango%\") THEN SUBSTRING_INDEX(os,\" \",4)
+        WHEN (os LIKE \"%PocketPC%\") THEN \"Pochet PC\"
+        WHEN (os LIKE \"%Microsoft%\" AND os LIKE \"% 8.1%\") THEN 8.1
+        WHEN (os LIKE \"%Windows Phone 8,%\" AND os LIKE \"% 8,%\") THEN 8
+        WHEN (os LIKE \"%Qind%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-2),\" \",1)
+        WHEN (os LIKE \"%HP webOS%\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        WHEN (os LIKE \"%ios%\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        ELSE \"test_os_version\"
+        END AS os_version";
+
+        //version name 3
+        $sql.="
+        ,CASE
+    	WHEN (os LIKE \"%Cupcake%\") THEN \"Cupcake\"
+    	WHEN (os LIKE \"%Eclair%\") THEN \"Eclair\"
+    	WHEN (os LIKE \"%Froyo%\") THEN \"Froyo\"
+        WHEN (os LIKE \"%Gingerbread%\") THEN \"Gingerbread\"
+        WHEN (os LIKE \"%HoneyComb%\") THEN \"HoneyComb\"
+        WHEN (os LIKE \"%Ice Cream Sandwich%\") THEN \"IceCreamsandwich\"
+    	WHEN (os LIKE \"%Jelly Bean%\") THEN \"Jelly_Bean\"
+    	WHEN (os LIKE \"%KitKat%\") THEN \"KitKat\"
+    	WHEN (os LIKE \"%Lollipop%\") THEN \"Lollipop\"
+    	WHEN (os LIKE \"%Marshmallow%\") THEN \"Marshmallow\"
+        WHEN (os LIKE \"%Nougat%\") THEN \"Nougat\"
+        WHEN (os LIKE \"%Oreo%\") THEN \"Oreo\"
+        WHEN (os LIKE \"%P%\" AND os LIKE \"%Android%\") THEN \"P\"
+        WHEN (os LIKE \"%Wear%\") THEN \"Android Wear\"
+        WHEN (os LIKE \"%iOS%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1),\",\",1)
+        WHEN (os LIKE \"%watchOS%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1),\",\",1)
+        WHEN (os LIKE \"%Symbian OS,%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",3),\" \",-2)
+        WHEN (os LIKE \"%Symbian%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",3),\" \",-2),\",\",1)
+        WHEN (os LIKE \"%Windows%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",4),\" \",-3),\",\",1)
+        WHEN (os LIKE \"%Blackberry%\" AND os LIKE \"%.%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-1),\",\",1)
+        WHEN (os LIKE \"%Firefox OS, %\") THEN SUBSTRING_INDEX(os,\" \",1)
+        WHEN (os LIKE \"%Firefox OS %\") THEN SUBSTRING_INDEX(os,\" \",1)
+        WHEN (os LIKE \"%HP webOS%\") THEN SUBSTRING_INDEX(os,\" \",-2)
+        WHEN (os LIKE \"%amazon%\") THEN SUBSTRING_INDEX(os,\" \",2)
+        WHEN (os LIKE \"%Tencent OS%\") THEN SUBSTRING_INDEX(os,\" \",1)
+        ELSE \"test_os_version_name\"
+        END AS os_version_name
+        ";
+
+        //dimensions Ecrant 4
+        $sql.= " 
+        ,SUBSTRING_INDEX(resolution,' ',3) AS screen_resolution ";
+
+        //resolution ecrant -- pouces 5
+        $sql.= "
+        ,SUBSTRING_INDEX(size,'inches',1) AS phone_size
+        ";
+
+        //poids 6
+        $sql.="
+        ,SUBSTRING_INDEX(weight,' ',1) AS phone_weight
+        ";
+
+        //camera arriere 7
+        $sql.="
+        ,SUBSTRING_INDEX(SUBSTRING_INDEX(primary_,'(',1),',',1) AS primary_camera_resolution
+        ";
+
+        //camera avant 8
+        $sql.="
+        ,SUBSTRING_INDEX(SUBSTRING_INDEX(secondary,'(',1),',',1) AS secondary_camera_resolution
+        ";
+
+        //nombre du cpu 9
+        $sql.="
+        ,CASE 
+    	WHEN (cpu LIKE \"Octa-core%\") THEN 8
+    	WHEN (cpu LIKE \"Dual-core% & Dual-core%\" OR cpu LIKE \"Dual-core% & Dual-core%\") THEN 8
+    	WHEN (cpu LIKE \"Hexa-core%\") THEN 6
+        WHEN (cpu LIKE \"Quad-core%\") THEN 4
+        WHEN (cpu LIKE \"Dual-core%\") THEN 2
+        WHEN (cpu LIKE \"1.2 GHz / 1.6 GHz%\") THEN 2
+        ELSE 1
+    	END AS cpu_number
+        ";
+
+        //vitesse du cpu 10
+        $sql.="
+        ,SUBSTRING_INDEX(cpu,' ',2) AS cpu_speed
+        ";
+
+        //ram 11
+        $sql.="
+        ,internal as ram
+        ";
+
+        //mémoire interne 12
+        $sql.="
+        ,SUBSTRING_INDEX(internal,',',1) AS interne_memory
+        ";
+
+        //connexions 13
+        $sql.="
+        ,CASE
+		WHEN (_4g_bands LIKE \"%LTE%\") THEN \"4G\"
+        WHEN (_3g_bands LIKE \"%HSDPA%\") THEN \"3G\"
+        ELSE \"2G\"
+	    END AS connexion_type
+        ";
+
+        //capaciter batterie 14
+        $sql.="
+        ,CASE
+		WHEN (battery_c LIKE \"%Po%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(battery_c,\" \",3),\" \",-2)
+        ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(battery_c,\" \",3),\" \",-2)
+	    END AS battery_capacity
+        ";
+
+        //couleur 15
+        $sql.="
+        ,colors AS phone_color
+        ";
+
+        //sim1 format 16
+        $sql.="
+        ,CASE
+		WHEN (sim LIKE \"%Dual%\") THEN 
+			IF(sim LIKE \"%Stand-by%\"/* SI Stand-by J'ajoute la même donner dans sim2_type */,(SELECT sim as test_sim),2)
+		WHEN (SELECT DISTINCT sim FROM llx_product_phone_raw 
+				WHERE NOT EXISTS(SELECT sim LIKE \"%5%\" FROM llx_product_phone_raw))
+					THEN \"test\"
+        ELSE \"n/a\"
+	    END AS sim1_format
+        ";
+
+        //sim2 format 17
+        $sql.="
+        ,CASE
+		WHEN (sim LIKE \"%Dual%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(sim,\"(\",-1),\",\",1)
+		ELSE \"simple sim\"
+        END AS sim2_format
+        ";
+
+        //dual sim 18
+        $sql.="
+        ,CASE
+		WHEN (sim LIKE \"%Dual%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(sim,\"(\",-1),\",\",1)
+		ELSE \"dual-sim\"
+        END AS dual_sim
+        ";
+
+        //fk_product_phone_raw 19
+        $sql.="
+        ,rowid as fk_product_phone_raw
+        ";
+
+        //FROM
+        $sql.=" FROM " . MAIN_DB_PREFIX . "product_phone_raw";
+
+        //ON DUPLICATE CASE
         $sql.= " ON DUPLICATE KEY UPDATE ".implode(', ', $t_valUpd);
-//        echo $sql;
-//        $this->db->begin();
-        $this->db->query($sql);
-//        $this->db->commit();
+
+//        print '<pre>';
+//        print_r($sql);
+//        print '</pre>';
+
+        $resql = $this->db->query($sql);
+        $commit = $this->db->commit($sql);
+
+        var_dump($resql);
+        var_dump($commit);
+
     }
 
     /**
@@ -262,16 +446,20 @@ class ProductPhone //extends CommonObject
           );
         }
 
-        //affichage en fonction des filtre selectionner
+        //affichage des caractéristique par défault
+        $t_keyDevice = array(
+            'DeviceName', 'announced','os_version_name'
+        ,'os_version','cpu_number','os_name'
+        ,'screen_resolution'
+        );
+
+        $t_keyDeviceFlip = array_flip($t_keyDevice);
+
+        //affichage des caractéristique en fonction des filtre selectionner
         $t_paramKey = array();
         foreach ($t_param as $key=>$param) {
-            $t_paramKey[] =  $key;
+                    $t_paramKey[] =  $key;
         }
-
-        //affichage par défault des filtre
-        $t_keyDevice = array(
-                'DeviceName', 'announced',
-            );
 
         $t_search_productphone = array();
 
@@ -283,6 +471,7 @@ class ProductPhone //extends CommonObject
             ,'secondary_camera_resolution','cpu_number','cpu_speed','ram'
             ,'interne_memory','connexion_type','battery_capacity','sim1_format'
             ,'sim2_format','dual_sim','label','stock','lieu'
+            ,'tosell'
         );
 
         // recupere les paramettre
@@ -333,6 +522,9 @@ class ProductPhone //extends CommonObject
         $sql .= " ,ps.reel AS stock";
         $sql .= " ,e.lieu";
         $sql .= " ,ppr.announced AS announced";
+
+        $sql .= " ,p.tosell AS tosell";
+
         $sql .= $sql_filterField;
 
         //Jointure
@@ -345,8 +537,8 @@ class ProductPhone //extends CommonObject
         if($t_where){
           $sql .= " WHERE ".implode(' AND ',$t_where);
         }
-        $sql .= " ORDER BY p.label DESC";
-//        echo $sql;
+        $sql .= " ORDER BY p.price_ttc ASC";
+
         $resql = $this->db->query($sql);
 
         /* ================================================================= */
@@ -359,14 +551,39 @@ class ProductPhone //extends CommonObject
             if ($num_rows > 0) {
                 while ($row = (array)$this->db->fetch_object($resql)) {
 
+                    //***************************************************//
+                                //ZONE DE TEST
+
+
+                    //Affichage par default
                     foreach($t_keyDevice as $k){
-                      $t_search_productphone[$row['DeviceId']]['Device'][ $k ] = $row[ $k ];
+                        $t_search_productphone[$row['DeviceId']]['Device'][ $k ] = $row[ $k ];
                     }
 
+                    //Affichage des caractéristique séléctionner
                     foreach ($t_paramKey as $paramKey){
                         $t_search_productphone[$row['DeviceId']]['Device'][ $paramKey ] = $row[ $paramKey ];
                     }
 
+
+
+
+
+                    //***************************************************//
+
+
+
+//                    //Affichage par default
+//                    foreach($t_keyDevice as $k){
+//                      $t_search_productphone[$row['DeviceId']]['Device'][ $k ] = $row[ $k ];
+//                    }
+//
+//                    //Affichage des caractéristique séléctionner
+//                    foreach ($t_paramKey as $paramKey){
+//                        $t_search_productphone[$row['DeviceId']]['Device'][ $paramKey ] = $row[ $paramKey ];
+//                    }
+
+                    //Affichage des produit associer
                     foreach($t_keyAssociated as $k){
                       $t_search_productphone[$row['DeviceId']]['DeviceAssociated'][$row['id_product']][ $k ] = $row[ $k ];
                     }
@@ -375,6 +592,7 @@ class ProductPhone //extends CommonObject
         }
         /* ================================================================= */
         /* ================================================================= */
+
         return $t_search_productphone;
     }
 
@@ -631,6 +849,7 @@ class ProductPhone //extends CommonObject
         $t_filter = array();
 
         $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "c_product_phone_filter";
+        $sql .= " WHERE active=1";
         $sql .= " ORDER BY `sort_order` ASC";
         $t_row = $this->db->query($sql);
 
@@ -640,7 +859,8 @@ class ProductPhone //extends CommonObject
             }
             $t_filter[ $row['field'] ] = $row;
         }
-
+//        var_dump('get_filter ');
+//        var_dump($t_filter);
         return $t_filter;
     }
 
@@ -818,17 +1038,30 @@ class ProductPhone //extends CommonObject
 
     /**
      * @author Vaiarii
-     * Récupère les valeur du champs selectionner dans llx_product_phone_raw
+     * Récupère les valeur du champs selectionner dans llx_product_phone
      * @param $filter_value
      * @return array
      */
     function get_filter_value($filter_value)
     {
-
         $t_filter_value = array();
 
-        $sql = "SELECT `" . $filter_value . "` from " . MAIN_DB_PREFIX . "product_phone";
-        $sql .= " GROUP BY " . $filter_value;
+        // tri a appliquer en fonction du champs
+        $t_sql_order = array(
+          'os_version' => 'INET_ATON(SUBSTRING_INDEX(CONCAT('.$filter_value.',".0.0.0"),".",4))',
+//          'interne_memory' => 'INET_ATON(SUBSTRING_INDEX(CONCAT('.$filter_value.',".0.0.0"),".",4))',
+        );
+
+        $sql = "SELECT DISTINCT `" . $filter_value . "`";
+        $sql.= " FROM " . MAIN_DB_PREFIX . "product_phone AS pp";
+        $sql.= " LEFT JOIN " . MAIN_DB_PREFIX . "product_phone_raw AS ppr on pp.fk_product_phone_raw = ppr.rowid";
+//        var_dump($sql);
+        if( isset($t_sql_order[$filter_value]) ){
+          $sql.= " ORDER BY " . $t_sql_order[$filter_value];
+        } else {
+          $sql.= " ORDER BY " . $filter_value;
+        }
+        //echo $sql;
 
         $resql = $this->db->query($sql);
         if ($resql) {
@@ -915,14 +1148,15 @@ class ProductPhone //extends CommonObject
     }
 
     /**
-     * récupère les valeur dans llx_product_phone_product
+     * récupère les valeur dans llx_product_phone
      * @return array
      */
-    function get_productPhoneProduct(){
+    function get_all_productPhone(){
 
         $t_productphone = array();
 
-        $sql = " SELECT * FROM " . MAIN_DB_PREFIX ."product_phone_product ";
+        $sql = " SELECT * FROM " . MAIN_DB_PREFIX ."product_phone ";
+
         $resql = $this->db->query($sql);
 
         if($resql){
@@ -932,7 +1166,29 @@ class ProductPhone //extends CommonObject
                 };
             }
         }
+
         return $t_productphone;
+    }
+
+    /**
+     * Récupère les valeur du champs "value" de la table llx_c_product_phone_filter
+     */
+    function get_valueOfValue(){
+
+        $t_filter_value = array();
+
+        $sql = " SELECT value FROM " . MAIN_DB_PREFIX ."c_product_phone_filter ";
+
+        $resql = $this->db->query($sql);
+
+        if($resql){
+            if($this->db->num_rows($resql > 0)){
+                while ($row = (array)$this->db->fetch_object($resql)){
+                    $t_filter_value[] = $row;
+                };
+            }
+        }
+        return $t_filter_value;
     }
 
 

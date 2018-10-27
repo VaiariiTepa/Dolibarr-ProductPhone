@@ -225,3 +225,4 @@ productphone_sim2_format= Format sim 2
 productphone_dual_sim= Double Sim
 productphone_fk_product_phone_raw= Id produit brut
 productphone_release_date= Date de sortie
+SellingPriceTTC = TTC
