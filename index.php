@@ -100,20 +100,25 @@ print '<div class="fiche">';
                                 print '</div>';
                                 print '<div id="cadre_title">';
                                     print '<div id="cadreDefault">';
+                                    $t_fkey = array();
                                         //Affichage par défault sans mis en page spécial
                                         foreach($t_paramKey as $fkey=>$paramKey){
                                             if ($paramKey !== 'DeviceName' && $paramKey !== 'announced'){
                                                 print $fkey.': '.$value['Device'][$paramKey].' | ';
+                                                $t_fkey[] = $fkey;
                                             }
                                         }
                                     print '</div>';
+                            $test = implode(',',$t_fkey);
                                     print '<div id="cadre">';
                                         //FOREACH permetant d'affiché les filtres qui on été selectionner
                                         foreach ($t_param as $nkey=>$param){
                                             if(!empty($param)){
+                                                if(stripos($value['Device'][$nkey],$test) !== false){
                                                         $label = (!empty($t_filter[$nkey]) ? $t_filter[$nkey]['label'] : $nkey );
                                                         //lire le nom des caractéristique par default
                                                         print $label.': '.$value['Device'][$nkey].' | ';
+                                                }
                                             }
                                         }
                                     print '</div>';
@@ -208,7 +213,6 @@ print '<div class="fiche">';
 
     /* Fin fiche center */
     print '</div>';
-print '<div id="other">lancer le scroll</div>';
 
 /* Fin Div Fiche */
 print '</div>';
