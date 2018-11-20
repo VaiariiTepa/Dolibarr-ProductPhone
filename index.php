@@ -62,9 +62,6 @@ if($action == 'reset'){
 
 llxHeader('', $langs->trans('Product-Phone'));
 
-
-
-
 //affiché toutes les données d'un Mega var_dump
 
 //    print '<pre>';
@@ -211,7 +208,6 @@ print '<div class="fiche">';
 
     /* Fin fiche center */
     print '</div>';
-
 print '<div id="other">lancer le scroll</div>';
 
 /* Fin Div Fiche */
