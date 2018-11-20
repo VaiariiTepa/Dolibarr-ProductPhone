@@ -34,24 +34,18 @@ header('Content-Type: text/css');
 
 #header_accordion>div>b.selected { background-color: #00adee }
 
-div#cadre { background-color: coral }
+/*div#cadre { background-color: coral }*/
 
 
 .vertical-menu {
-/*    border: 3px black solid;*/
-    width: 300px;
-    margin-left: 75%;
-/*    margin-top: 1%;*/
-    position: absolute;
+    margin-left: 55%;
     background-color: lightgrey;
 }
 
+
 .vertical-menu select {
-    background-color: #eee; /* Grey background color */
-    color: black; /* Black text color */
-    display: block; /* Make the links appear below each other */
-/*    padding: 12px; /* Add some padding */*/
-    text-decoration: none; /* Remove underline from links */
+    background-color: #eee;
+    color: Black;
 }
 
 .vertical-menu select:hover {
@@ -63,102 +57,6 @@ div#cadre { background-color: coral }
     color: white;
 }
 
-#first_row
-{
-    border: 1px solid gray;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    background-color: whitesmoke;
-    border-radius: 10px 10px 10px 10px;
-    box-shadow: 1px 1px 12px #555;
-}
-
-#global_div
-{
-/*    border: 2px solid black;*/
-}
-
-#title_contenue
-{
-    background-color: #C0C0C0;
-    border-radius: 10px;
-    border: 1px solid gray;
-    width: 80%;
-    margin-left: 4%;
-    margin-right: 4%;
-    margin-top: 1%;
-    margin-bottom: 1%;
-    height: 150px;
-}
-
-.titre_accordion
-{
-    font-size: small;
-    font-family: Palatino, URW Palladio L, serif;
-}
-
-.DeviceName
-{
-    font-size: small;
-    font-family: Comic Sans MS, Comic Sans, cursive;
-}
-
-#bandeau
-{
-    display: flex;
-    flex-wrap: wrap;
-}
-
-*
-{
-/*    border: 1px solid red;*/
-}
-
-#label_value
-{
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-
-
-#ref_header
-{
-/*    border: 1px solid grey;*/
-    min-width: 300px;
-    max-width: 300px;
-    text-align: center;
-    display: block;
-}
-
-#label_ref
-{
-/*    background-color: #C0C0C0;*/
-/*    display: block;*/
-/*    align-content: center;*/
-/*    border: 1px solid grey;*/
-/*    border-radius: 1px 1px 10px 10px;*/
-/*    min-width: 300px;*/
-/*    max-width: 300px;*/
-}
-
-#reference
-{
-    text-align: center;
-    display: block;
-}
-
-#forfait_header
-{
-    font-family: URW Chancery L, cursive;
-    min-width: 300px;
-    max-width: 300px;
-    text-align: center;
-    display: block;
-/*    border: 1px solid grey;*/
-}
 
 #label_forfait
 {
@@ -175,13 +73,10 @@ div#cadre { background-color: coral }
 {
     text-align: center;
     display: block;
-
 }
 
 #price_header
 {
-    /*margin-left: 45%;*/
-/*    border: 1px solid gray;*/
     border-radius: 1px 10px 0px 0px;
     font-family: Impact, fantasy;
     width: 100px;
@@ -208,7 +103,6 @@ div#cadre { background-color: coral }
 
 #color_header
 {
-/*    border: 1px solid gray;*/
     border-radius: 10px 0px 1px 1px;
     width: 120px;
     display: flex;
@@ -239,41 +133,44 @@ div#cadre { background-color: coral }
     display: block;
 }
 
-#cadre
+/**/
+/*#accordion*/
+/*{*/
+/*    */
+/*}*/
+
+.assenceur_catalogue
 {
-    display: flex;
-    flex-wrap: wrap;
+    width: 150%;
 }
 
-#accordion
-{
-    display: block;
-    float: left;
-    width: 85%;
-}
-
-.contenue
-{
-/*border: 1px solid black;*/
-}
 
 #contenue_accordion
 {
-    display: flex;
-    flex-wrap: wrap;
+    min-height: 100px;
 }
 
 #table_contenue_accordion
 {
-    width: 78%;
-    margin-left: 25px;
+    width: 100%;
 }
 
-#photo
+.fichehalfright
 {
-    border: 1px solid black;
-    width: 200px;
-    height: 300px;
-    display: block;
-    float: left;
+    max-width: 50%;
+
 }
+
+/***/
+/*{*/
+/*    border: solid black 1px;*/
+/*}*/
+
+/*#photo*/
+/*{*/
+/*/*    border: 1px solid black;*/*/
+/*/*    width: 200px;*/*/
+/*/*    height: 300px;*/*/
+/*/*    display: block;*/*/
+/*/*    float: left;*/*/
+/*}*/

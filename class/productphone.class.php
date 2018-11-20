@@ -453,7 +453,7 @@ class ProductPhone //extends CommonObject
         ,'screen_resolution'
         );
 
-        $t_keyDeviceFlip = array_flip($t_keyDevice);
+//        $t_keyDeviceFlip = array_flip($t_keyDevice);
 
         //affichage des caractéristique en fonction des filtre selectionner
         $t_paramKey = array();
