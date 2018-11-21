@@ -36,7 +36,7 @@ foreach($t_filter as $field){
 //tableaux valeur par défault
 $t_paramKey = array(
     'Nom OS'=>'os_name',
-    'Nom Vresion'=>'os_version_name',
+    'Nom Version'=>'os_version_name',
     'Numéro Version'=>'os_version',
     'Nombre Coeur'=>'cpu_number',
     'Résolution écrant'=>'screen_resolution',
@@ -62,11 +62,6 @@ if($action == 'reset'){
 
 llxHeader('', $langs->trans('Product-Phone'));
 
-//affiché toutes les données d'un Mega var_dump
-
-//    print '<pre>';
-//    print_r($t_search_productphone);
-//    print '</pre>';
 
 print '<table summary="" width="100%" border="0" class="notopnoleftnoright" style="margin-bottom: 2px;">';
     print '<tbody>';
@@ -100,24 +95,28 @@ print '<div class="fiche">';
                                 print '</div>';
                                 print '<div id="cadre_title">';
                                     print '<div id="cadreDefault">';
-                                    $t_fkey = array();
                                         //Affichage par défault sans mis en page spécial
                                         foreach($t_paramKey as $fkey=>$paramKey){
                                             if ($paramKey !== 'DeviceName' && $paramKey !== 'announced'){
                                                 print $fkey.': '.$value['Device'][$paramKey].' | ';
-                                                $t_fkey[] = $fkey;
                                             }
                                         }
                                     print '</div>';
-                            $test = implode(',',$t_fkey);
+
                                     print '<div id="cadre">';
-                                        //FOREACH permetant d'affiché les filtres qui on été selectionner
+                                        //FOREACH permetant d'affiché dans les caractéristique
+                                        //les filtres qui on été selectionner, mais n'affiche pas
+                                        //les filtres qui sont déja affiché par défaut
                                         foreach ($t_param as $nkey=>$param){
                                             if(!empty($param)){
-                                                if(stripos($value['Device'][$nkey],$test) !== false){
-                                                        $label = (!empty($t_filter[$nkey]) ? $t_filter[$nkey]['label'] : $nkey );
-                                                        //lire le nom des caractéristique par default
-                                                        print $label.': '.$value['Device'][$nkey].' | ';
+                                                if ($param !== $value['Device']['os_name']
+                                                    && $value['Device']['os_version_name']
+                                                    && $param !== $value['Device']['os_version']
+                                                    && $param !== $value['Device']['cpu_number']
+                                                    && $param !== $value['Device']['screen_resolution']){
+                                                    $label = (!empty($t_filter[$nkey]) ? $t_filter[$nkey]['label'] : $nkey );
+                                                    //lire le nom des caractéristique par default
+                                                    print $label.': '.$value['Device'][$nkey].' | ';
                                                 }
                                             }
                                         }

@@ -34,7 +34,7 @@ header('Content-Type: text/css');
 
 #header_accordion>div>b.selected { background-color: #00adee }
 
-/*div#cadre { background-color: coral }*/
+div#cadre { background-color: #dcdee2 }
 
 
 .vertical-menu {
