@@ -274,12 +274,40 @@ class ProductPhone //extends CommonObject
 
         //vitesse du cpu 10
         $sql.="
-        ,SUBSTRING_INDEX(cpu,' ',2) AS cpu_speed
+        ,CASE
+			WHEN (cpu LIKE \"%mhz\") THEN SUBSTRING_INDEX(cpu,' ',-2)
+            WHEN (cpu LIKE \"%GHz\") THEN SUBSTRING_INDEX(cpu,' ',-2)
+            WHEN (cpu LIKE \"%Cortex-A8%\") THEN SUBSTRING_INDEX(cpu,' ',2)
+            WHEN (cpu LIKE \"Dual%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%Zephyr)\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%11\") THEN SUBSTRING_INDEX(cpu,' ',2)
+            WHEN (cpu LIKE \"%2.39 GHz (2x Monsoon%\") THEN \"2.39 GHz\"
+            WHEN (cpu LIKE \"Hexa-core (2x Monsoon%\") THEN \"2.1 GHz\"
+            WHEN (cpu LIKE \"%ARMv6\") THEN SUBSTRING_INDEX(cpu,' ',2)
+            WHEN (cpu LIKE \"%Quad-core\") THEN \"2.1 GHz\"
+			WHEN (cpu LIKE \"%Scorpion\") THEN SUBSTRING_INDEX(cpu,' ',2)
+			WHEN (cpu LIKE \"%Cortex-A5\") THEN SUBSTRING_INDEX(cpu,' ',2)
+			WHEN (cpu LIKE \"%MG2\") THEN SUBSTRING_INDEX(cpu,' ',2)
+			WHEN (cpu LIKE \"Quad-core%Cortex-A9\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%2x1.6 GHz Kryo)\") THEN \"2.15 GHz\"
+            WHEN (cpu LIKE \"%& 4\") THEN \"2.15 GHz\"
+            WHEN (cpu LIKE \"Octa-core (4x2.%\") THEN \"2.3 GHz\"
+            WHEN (cpu LIKE \"%1.5 GHz Krait\") THEN \"1.5 GHz\"
+            WHEN (cpu LIKE \"%Krait 400\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%Cortex-A57\") THEN \"2.0 GHz\"
+            WHEN (cpu LIKE \"%Cortex-A7\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%.8 GHz Krait 300\") THEN \"1.8 GHz\"
+            WHEN (cpu LIKE \"%Cortex-A53\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%Typhoon\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%Twister\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
+            WHEN (cpu LIKE \"%Corte\") THEN \"1.5 GHz0\"
+            ELSE \"N/C\"
+			END AS cpu_speed
         ";
 
         //ram 11
         $sql.="
-        ,internal as ram
+        ,SUBSTRING_INDEX(internal,',',-1) as ram
         ";
 
         //mémoire interne 12
