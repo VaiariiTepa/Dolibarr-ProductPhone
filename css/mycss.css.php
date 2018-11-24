@@ -38,14 +38,18 @@ div#cadre { background-color: #dcdee2 }
 
 
 .vertical-menu {
-    margin-left: 55%;
+    margin-left: 70%;
     background-color: lightgrey;
+    text-align: center;
+    padding-top: 3%;
+    padding-bottom: 3%;
 }
-
 
 .vertical-menu select {
     background-color: #eee;
     color: Black;
+    width: 90%;
+    max-width: 90%;
 }
 
 .vertical-menu select:hover {
@@ -56,7 +60,6 @@ div#cadre { background-color: #dcdee2 }
     background-color: #4CAF50; /* Add a green color to the "active/current" link */
     color: white;
 }
-
 
 #label_forfait
 {
@@ -134,15 +137,42 @@ div#cadre { background-color: #dcdee2 }
 }
 
 /**/
-/*#accordion*/
-/*{*/
-/*    */
-/*}*/
+#accordion
+{
+/*    border: 1px solid black;*/
+}
 
 .assenceur_catalogue
 {
-    width: 150%;
+    max-height: 800px;
+    width: 165%;
 }
+
+/*@media screen and (min-width: 200px) and (max-width: 640px){*/
+/*    .assenceur_catalogue*/
+/*    {*/
+/*        max-height: 730px;*/
+/*        width: 165%;*/
+/*    }*/
+/*}*/
+/**/
+/*@media screen and (min-width: 1000px) and (min-height: 600px){*/
+/*    .assenceur_catalogue*/
+/*    {*/
+/*        max-height: 600px;*/
+/*        width: 165%;*/
+/*    }*/
+/*}*/
+/**/
+/*@media screen and (min-width: 1800px){*/
+/*    .assenceur_catalogue*/
+/*    {*/
+/*        max-height: 800px;*/
+/*        width: 165%;*/
+/*    }*/
+/*}*/
+
+
 
 
 #contenue_accordion
@@ -155,11 +185,6 @@ div#cadre { background-color: #dcdee2 }
     width: 100%;
 }
 
-.fichehalfright
-{
-    max-width: 50%;
-
-}
 
 /***/
 /*{*/

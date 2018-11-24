@@ -80,7 +80,7 @@ print '<div class="fiche">';
     print '<div class="fichecenter">';
         print '<div class="fichehalfleft">';
             /* Assenceur catalogue */
-            print '<div class="assenceur_catalogue" style="overflow: scroll; height: 800px;">';
+            print '<div class="assenceur_catalogue" style="overflow: scroll; /*height: 800px;*/">';
                 //*********************************DIV OUVRANTE CATALOGUE***********************************************//
                 print '<div id="accordion">';
                 //*******************************************************************************************************//
@@ -193,7 +193,6 @@ print '<div class="fiche">';
                         print '<form>';
                         if($t_input){
                             foreach($t_input as $input){
-                                //var_dump($input);
                                 print $input['label'];
                                 print '<br>';
                                 print $input['input'];
@@ -205,6 +204,8 @@ print '<div class="fiche">';
 
                 /* Fin Div Form Filter */
                 print '</div>';
+
+                print '<div class="Test">0</div>';
 
             print '</div>';
         /* Fin Fichehalfright */
@@ -221,6 +222,10 @@ print '</div>';
 llxFooter();
 ?>
 <script>
+    var x = 0;
+
+    var largeur_fenetre = $(window).width();
+    var hauteur_fenetre = $(window).height();
 
     $(document).ready(function(){
         //ACCORDION
@@ -229,11 +234,13 @@ llxFooter();
             heightStyle: "fill"
         });
 
-        $("#other").click(function(){
-            $(".assenceur_catalogue").scroll();
-        })
+        $(window).resize(function(){
+            $("Test").text(x += 1);
+
+        });
 
     })
+
 
 
 </script>
