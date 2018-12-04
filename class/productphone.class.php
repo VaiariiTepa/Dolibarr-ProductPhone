@@ -49,7 +49,7 @@ class ProductPhone //extends CommonObject
     //soit 19 champs
     //Utiliser dans la methode "feed_productPhone_from_productPhoneRaw()"
     var $t_field_product_phone = array(
-        'os_name', 'os_version', 'os_version_name', 'screen_resolution', 'phone_size'
+        'os_name', 'os_version', 'os_version_name', 'screen_resolution_width', 'screen_resolution_height', 'phone_size'
     , 'phone_weight', 'primary_camera_resolution', 'secondary_camera_resolution', 'cpu_number', 'cpu_speed'
     , 'ram', 'interne_memory', 'connexion_type', 'battery_capacity', 'phone_color'
     , 'sim1_format', 'sim2_format', 'dual_sim' , 'fk_product_phone_raw'
@@ -175,32 +175,45 @@ class ProductPhone //extends CommonObject
         $sql.= " 
         CASE 
         WHEN (os LIKE \"%Microsoft%\") THEN \"Windows Phone\"
-        ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(os,',',1),' ',1) 
+        WHEN (os LIKE \"%Android%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,',',1),' ',1) 
+        WHEN (os LIKE \"%iOS%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,',',1),' ',1) 
+        WHEN (os LIKE \"watch%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,',',1),' ',1) 
+        WHEN (os LIKE \"%Microsoft%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,',',1),' ',1) 
+        WHEN (os LIKE \"Tizen%\") THEN \"Tizen\"
+        WHEN (os LIKE \"Firefox%\") THEN SUBSTRING_INDEX(os,' ',1)
+        ELSE \"N/C\"
         END AS os_name";
 
         //version os 2
         $sql.= "
         ,CASE 
     	WHEN (os LIKE \"%v%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",3),\" \",-2),\",\",-1),\"v\",-1)
-        WHEN (os LIKE \"%Android 4%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
-        WHEN (os LIKE \"%Android 5%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
-        WHEN (os LIKE \"%Android 6%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
-        WHEN (os LIKE \"%Android 7%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
-        WHEN (os LIKE \"%Android 8%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
-        WHEN (os LIKE \"%Android 9%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"Android 4%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"Android 5%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"Android 6%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"Android 7%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"Android 8.%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
+        WHEN (os LIKE \"Android 9%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",2),\" \",-1)
         WHEN (os LIKE \"%Wear%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-3),\"(\",1)
         WHEN (os LIKE \"%Blackberry%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-1),\",\",1)
         WHEN (os LIKE \"%Blackberry%\" AND os LIKE \"%.%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-1),\",\",1)
         WHEN (os LIKE \"%Blackberry%\" AND os LIKE \"%, upgradable %\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-2),\",\",1)
         WHEN (os LIKE \"%fox OS%\") THEN SUBSTRING_INDEX(os,\" \",-1)
-        WHEN (os LIKE \"%Mango%\") THEN SUBSTRING_INDEX(os,\" \",4)
+        WHEN (os LIKE \"%Firefox OS, upgradable to v2.1\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        WHEN (os LIKE \"%Mango%\") THEN SUBSTRING_INDEX(os,\" \",-2)
         WHEN (os LIKE \"%PocketPC%\") THEN \"Pochet PC\"
         WHEN (os LIKE \"%Microsoft%\" AND os LIKE \"% 8.1%\") THEN 8.1
         WHEN (os LIKE \"%Windows Phone 8,%\" AND os LIKE \"% 8,%\") THEN 8
         WHEN (os LIKE \"%Qind%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(os,\" \",-2),\" \",1)
         WHEN (os LIKE \"%HP webOS%\") THEN SUBSTRING_INDEX(os,\" \",-1)
         WHEN (os LIKE \"%ios%\") THEN SUBSTRING_INDEX(os,\" \",-1)
-        ELSE \"test_os_version\"
+        WHEN (os LIKE \"watchOS%\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        WHEN (os LIKE \"%wearable platform 2.3.2%\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        WHEN (os LIKE \"Tizen-based wearable%\") THEN \"N/C\"
+        WHEN (os LIKE \"%Professional\") THEN SUBSTRING_INDEX(os,\" \",-2)
+        WHEN (os LIKE \"%Windows Phone 7\") THEN SUBSTRING_INDEX(os,\" \",-2)
+        WHEN (os LIKE \"%Windows 10\") THEN SUBSTRING_INDEX(os,\" \",-1)
+        ELSE \"N/C\"
         END AS os_version";
 
         //version name 3
@@ -235,13 +248,28 @@ class ProductPhone //extends CommonObject
         END AS os_version_name
         ";
 
+
+        $sql.= "
+        ,CASE
+    	WHEN (resolution LIKE \"%pixels%\") THEN SUBSTRING_INDEX(resolution,'x',1)
+    	WHEN (resolution LIKE \"%lines%\") THEN \"N/C\"
+		ELSE \"N/C\"
+        END AS screen_resolution_width";
+
         //dimensions Ecrant 4
         $sql.= " 
-        ,SUBSTRING_INDEX(resolution,' ',3) AS screen_resolution ";
+        ,CASE
+    	WHEN (resolution LIKE \"%pixels%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(resolution,' ',3),' ',-1)
+		ELSE \"N/C\"
+        END AS screen_resolution_height";
+
 
         //resolution ecrant -- pouces 5
         $sql.= "
-        ,SUBSTRING_INDEX(size,'inches',1) AS phone_size
+        ,CASE
+		WHEN (size LIKE \"%inches%\") THEN SUBSTRING_INDEX(size,'inches',1)
+        ELSE \"N/C\"
+        END AS phone_size
         ";
 
         //poids 6
@@ -251,12 +279,26 @@ class ProductPhone //extends CommonObject
 
         //camera arriere 7
         $sql.="
-        ,SUBSTRING_INDEX(SUBSTRING_INDEX(primary_,'(',1),',',1) AS primary_camera_resolution
+        ,CASE
+		WHEN (primary_ LIKE \"%Dual 12 MP%\") THEN SUBSTRING_INDEX(primary_,',',1)
+		WHEN (secondary LIKE \"%Yes, dual video call, Auto HDR%\") THEN \"12 MP\"
+		ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(primary_,'(',1),',',1)
+	    END AS primary_camera_resolution
         ";
 
         //camera avant 8
         $sql.="
-        ,SUBSTRING_INDEX(SUBSTRING_INDEX(secondary,'(',1),',',1) AS secondary_camera_resolution
+        ,CASE 
+		WHEN (secondary LIKE \"%MP,%\") THEN SUBSTRING_INDEX(secondary,',',1)
+		WHEN (secondary LIKE \"%MP;%\") THEN SUBSTRING_INDEX(secondary,';',1)
+		WHEN (secondary LIKE \"%MP\") THEN secondary
+		WHEN (secondary LIKE \"%MP (f%\") THEN SUBSTRING_INDEX(secondary,' ',2)
+		WHEN (secondary LIKE \"%VGA%\") THEN \"VGA\"
+		WHEN (secondary LIKE \"%Yes, dual video call, Auto HDR%\") THEN \"5 MP\"
+		WHEN (secondary LIKE \"%Yes%\") THEN \"VGA\"
+		WHEN (secondary LIKE \"%Videocall%\") THEN \"VGA\"
+	    ELSE \"N/C\"
+        END AS secondary_camera_resolution
         ";
 
         //nombre du cpu 9
@@ -287,6 +329,8 @@ class ProductPhone //extends CommonObject
             WHEN (cpu LIKE \"%Quad-core\") THEN \"2.1 GHz\"
 			WHEN (cpu LIKE \"%Scorpion\") THEN SUBSTRING_INDEX(cpu,' ',2)
 			WHEN (cpu LIKE \"%Cortex-A5\") THEN SUBSTRING_INDEX(cpu,' ',2)
+			WHEN (cpu LIKE \"%Quad-core 1.2 GHz Cortex-A5%\") THEN \"1.2 GHz\"
+			WHEN (cpu LIKE \"%S5PC111 1GHz\") THEN \"1 GHz\"
 			WHEN (cpu LIKE \"%MG2\") THEN SUBSTRING_INDEX(cpu,' ',2)
 			WHEN (cpu LIKE \"Quad-core%Cortex-A9\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
             WHEN (cpu LIKE \"%2x1.6 GHz Kryo)\") THEN \"2.15 GHz\"
@@ -301,13 +345,45 @@ class ProductPhone //extends CommonObject
             WHEN (cpu LIKE \"%Typhoon\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
             WHEN (cpu LIKE \"%Twister\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cpu,' ',3),' ',-2)
             WHEN (cpu LIKE \"%Corte\") THEN \"1.5 GHz0\"
+            WHEN (cpu LIKE \"%ARM926EJ-S\") THEN \"200 MHz\"
+            WHEN (cpu LIKE \"%ARM 1136\") THEN \"450 MHz\"
+            WHEN (cpu LIKE \"%TavorP\") THEN \"800 MHz\"
+            WHEN (cpu LIKE \"%1.7 GHz Krait\") THEN \"1.7 GHz\"
+            WHEN (cpu LIKE \"%1.3 GHz Krait\") THEN \"1.3 GHz\"
+            WHEN (cpu LIKE \"%1.9 GHz Cortex-A15\") THEN \"1.9 GHz\"
+            WHEN (cpu LIKE \"%ARM 920T\") THEN \"104 MHz\"
+            WHEN (cpu LIKE \"%ARM925T\") THEN \"192 MHz\"
+            WHEN (cpu LIKE \"%ARM 920T\") THEN \"104 MHz\"
+            WHEN (cpu LIKE \"%168 MHz ARM925T\") THEN \"168 MHz\"
+            WHEN (cpu LIKE \"%150 MHz ARM925T\") THEN \"150 MHz\"
+            WHEN (cpu LIKE \"%123 MHz ARM925T\") THEN \"123 MHz\"
+            WHEN (cpu LIKE \"%ARM925\") THEN \"133 MHz\"
+            WHEN (cpu LIKE \"%ARM926EJ-S\") THEN \"204 MHz\"
+            WHEN (cpu LIKE \"%ARM 9\") THEN \"52 MHz\"
+            WHEN (cpu LIKE \"%104 MHz ARM 9\") THEN \"104 MHz\"
+            WHEN (cpu LIKE \"52 MHz ARM 9%\") THEN \"52 MHz\"
+            WHEN (cpu LIKE \"%Dual ARM 9\") THEN \"220 MHz\"
+            WHEN (cpu LIKE \"%260 MHz Dual ARM 9\") THEN \"260 MHz\"
+            WHEN (cpu LIKE \"%J110L\") THEN \"260 MHz\"
+            WHEN (cpu LIKE \"%1.6 GHz Cort\") THEN \"1.6 GHz\"
+            WHEN (cpu LIKE \"%India\") THEN \"1.5 GHz\"
+            WHEN (cpu LIKE \"%J106H/DS\") THEN \"1.5 GHz\"
+            WHEN (cpu LIKE \"%BoostMobi\") THEN \"1.4 GHz\"
+            WHEN (cpu LIKE \"Octa-core (2x2.2 GHz Cortex-A73 & 6x1.6 GHz Cortex%\") THEN \"2.2 GHz\"
+            WHEN (cpu LIKE \"Octa-core (Quad-core 1.2 GHz Cortex-A53 & Quad-core 1.5 GHz%\") THEN \"1.5 GHz\"
+            WHEN (cpu LIKE \"Deca-core (2x2.3 GHz Cortex-A72%\") THEN \"2.3 GHz\"
             ELSE \"N/C\"
 			END AS cpu_speed
         ";
 
         //ram 11
         $sql.="
-        ,SUBSTRING_INDEX(internal,',',-1) as ram
+        ,CASE
+		WHEN (internal LIKE \"%DDR%\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(internal,' ',-4),\" \",2)
+		WHEN (internal LIKE \"%RAM\") THEN SUBSTRING_INDEX(SUBSTRING_INDEX(internal,\" \",-3),\" \",2)
+		WHEN (internal LIKE \"%MB\") THEN internal
+        ELSE \"N/C\"
+		END AS ram
         ";
 
         //mémoire interne 12
