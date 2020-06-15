@@ -20,7 +20,6 @@ $p_fk_product_phone_raw = GETPOST('rowid');
 $p_device = GETPOST('device');
 $p_action = GETPOST('action');
 $p_product = GETPOST('product');
-$p_image = $_FILES['image'];
 
 
 $t_param = array(
@@ -55,12 +54,6 @@ $t_fields = array(
 /*
  * Actions
  */
-
-if($p_action == 'import_picture'){
-    var_dump($p_image);
-    if($_FILES['image']['error'] > 0) $erreur = "Erreur lors du transfert";
-}
-
 //$t_productPhone = array();
 if($p_fk_product_phone_raw){
 //    echo 'lecture du controler RECHERCHE UNIQUE RAW';
@@ -71,17 +64,6 @@ if($p_fk_product_phone_raw){
 
 }
 
-if($p_action == 'import'){
-    $_productPhone = new ProductPhone($db);
-    $result = $_productPhone->upload_image($p_image);
-    if($result>0){
-        if (move_uploaded_file($_FILES['tmp_name'],$target)){
-            setEventMessage('upload réussi','mesgs');
-        }
-    }else{
-        setEventMessage('Echec','errors');
-    }
-}
 
 /*
  * View
@@ -114,77 +96,51 @@ dol_fiche_head(
 
 //AFFICHAGE MARQUE ET MODELE
 print '<div class="tabBar">';
-
-print '<table class="border" width="100%">';
-print '<tbody>';
-
-foreach($t_fields[0] as $key){
-    print '<tr>';
-        print '<td width="30%">'.$langs->trans('productphone_'.$key).'</td>';
-        print '<td>';
-            print nl2br($t_productPhone[$key]);
-        print '</td>';
-    print '</tr>';
-}
-foreach ($t_param as $param){
-    //formulaire importation d'image
-    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'?action=import_picture" enctype="multipart/form-data">';
-        print '<tr>';
-            print '<td>Images</td>';
-            print '<td>';
-            print '<input type="hidden" name="rowid" value="'.$param.'">';
-            }
-            print '<input type="hidden" name="MAX_FILE_SIZE" value="7340032">';
-            print '<input type="file" name="image"/>  7mo max  <input type="submit" class="btn btn-primary" value="Importer"/>';
-            print '</td>';
-
-        print '</tr>';
-    print '</form>';
-print '</tbody>';
-print '</table>';
+	print '<table class="border" width="100%">';
+		print '<tbody>';
+		foreach($t_fields[0] as $key){
+			print '<tr>';
+				print '<td width="30%">'.$langs->trans('productphone_'.$key).'</td>';
+				print '<td>';
+					print nl2br($t_productPhone[$key]);
+				print '</td>';
+			print '</tr>';
+		}
+		print '</tbody>';
+	print '</table>';
 print '</div>';
 
 //AFFICHAGE FORMATER
 print '<div class="tabBar">';
-print '<table class="border" width="100%">';
-print '<tbody>';
-foreach($t_fields[1] as $key){
-    print '<tr>';
-    print '<td width="30%">'.$langs->trans('productphone_'.$key).'</td>';
-    print '<td>';
-    print nl2br($t_productPhone[$key]);
-    print '</td>';
-    print '</tr>';
-}
-print '</tbody>';
-print '</table>';
+	print '<table class="border" width="100%">';
+		print '<tbody>';
+		foreach($t_fields[1] as $key){
+			print '<tr>';
+				print '<td width="30%">'.$langs->trans('productphone_'.$key).'</td>';
+				print '<td>';
+					print nl2br($t_productPhone[$key]);
+				print '</td>';
+			print '</tr>';
+		}
+		print '</tbody>';
+	print '</table>';
 print '</div>';
 
 //AFFICHAGE BRUT
 print '<div class="tabBar">';
-print '<table class="border" width="100%">';
-print '<tbody>';
-foreach($t_fields[2] as $key){
-    print '<tr>';
-    print '<td width="30%">'.$langs->trans('productphone_'.$key).'</td>';
-    print '<td>';
-    print nl2br($t_productPhone[$key]);
-    print '</td>';
-    print '</tr>';
-}
-print '</tbody>';
-print '</table>';
+	print '<table class="border" width="100%">';
+		print '<tbody>';
+		foreach($t_fields[2] as $key){
+			print '<tr>';
+				print '<td width="30%">'.$langs->trans('productphone_'.$key).'</td>';
+				print '<td>';
+					print nl2br($t_productPhone[$key]);
+				print '</td>';
+			print '</tr>';
+		}
+		print '</tbody>';
+	print '</table>';
 print '</div>';
-
-
-
-
-
-/* ************************************************************************** */
-/*                                                                            */
-/* Barre d'action                                                             */
-/*                                                                            */
-/* ************************************************************************** */
 
 dol_fiche_end();
 

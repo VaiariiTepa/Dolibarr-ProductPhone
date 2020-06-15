@@ -96,6 +96,11 @@ function productPhoneCardPrepareHead($t_param = array())
     $head[$h][0] = dol_buildpath("/productphone/fichebrut.php" . $param, 1);
     $head[$h][1] = $langs->trans("Productficheraw");
     $head[$h][2] = 'produit_associer';
+	$h++;
+	
+    $head[$h][0] = dol_buildpath("/productphone/promo.php" . $param, 1);
+    $head[$h][1] = $langs->trans("promotion");
+    $head[$h][2] = 'promotion';
     $h++;
 
     // Show more tabs from modules
@@ -142,7 +147,7 @@ function generateInputHTMLofFilter($_filter)
                 case 'select':
                     $label .= '<label for="' . $input_id . '">' . $label_name . '</label>';
                     $input .= '<select ' . $attr_id_name . '>';
-                    $input .= '<option>-- Tous voir --</option>';
+                    $input .= '<option></option>';
                     foreach ($v_filter['t_value'] as $value) {
                         $selected = (isset($p_value) && ($p_value == $value) ? ' selected' : "");
                         $input .= '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
@@ -153,7 +158,7 @@ function generateInputHTMLofFilter($_filter)
                 // ok
                 case 'radio':
                     $label .= '<label>' . $label_name . '</label>';
-                    $input .= '<input type="radio">-- Tous voir --</input><br>';
+                    $input .= '<input type="radio"></input><br>';
                     foreach ($v_filter['t_value'] as $value) {
                         $checked = (isset($p_value) && ($p_value == $value) ? ' checked="checked"' : "");
                         $input .= '<label><input type="' . $v_filter['type'] . '" ' . $attr_id_name . ' value="' . $value . '"' . $checked . '>' . $value . '</label><br>';
@@ -163,7 +168,7 @@ function generateInputHTMLofFilter($_filter)
                 // ok
                 case 'checkbox':
                     $label .= '<label>' . $label_name . '</label>';
-                    $input .= '<input type="checkbox">-- Tous voir --</input><br>';
+                    $input .= '<input type="checkbox"></input><br>';
                     foreach ($v_filter['t_value'] as $value) {
                         $checked = (($p_value && in_array($value, $p_value)) ? 'checked="checked"' : '');
                         $input .= '<label><input type="' . $v_filter['type'] . '" ' . $attr_checkbox_id_name . ' value="' . $value . '"' . $checked . '>' . $value . '</label><br>';

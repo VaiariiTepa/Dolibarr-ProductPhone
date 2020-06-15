@@ -17,17 +17,9 @@ class fonoapi{
     global $conf;
 
     $this->url = "https://fonoapi.freshpixl.com/v1/";
-    $this->key = $conf->global->PHONE_PRODUCT_FONOAPI_KEY;
+    $this->key = "afb39f300992d08040dc5fc25fcf7ca4cc6d2b83c9f47622";
 
-    //    $this->key = "afb39f300992d08040dc5fc25fcf7ca4cc6d2b83c9f47622";782d2334321d0c4ef1735038c1fb8dbfd98bc6bef3e47a9f
-    //    $this->key = $conf->global−>PHONE_PRODUCT_FONOAPI_KEY;
-    //    var_dump('afb39f300992d08040dc5fc25fcf7ca4cc6d2b83c9f47622');
   }
-
-//  public static function init($ApiKey){
-//    $f = new self($ApiKey);
-//    return $f;
-//  }
 
 
   /**

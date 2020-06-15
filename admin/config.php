@@ -220,11 +220,18 @@ print '<tr class="pair">';
 print '<td width="16%">';
 print '<select id="select_field" name="field" value="'.$p_field.'">';
 // == FIELD -- Nom de filtre == //
+print '<option></option>';
 foreach ($t_field_filter as $field_filter){
 
     print '<option value="'.$field_filter['Field'].'">'.$field_filter['Field'].'</option>';
 }
 print '</select>';
+
+// print '<select id="select_price" name="field">';
+// 	print '<option></option>';	
+// 	print '<option value="price_ttc">price</option>';	
+// print '</select>';
+
 print '</td>';
 
 //type de filtre (select/checkbox/input/button/radio)
@@ -390,9 +397,27 @@ llxFooter();
 
             get_filter(selected_field);
         })
+
         //Ajouter un trigger
         $('#select_field').trigger('change');
     })
+
+    // function get_filter_price(){
+    
+	// 	$.ajax({
+    //         type:"GET",
+    //         url:"ajax.php",
+    //         dataType:"json",
+    //         data:{
+    //             'action': 'get_filter_price'
+    //             },
+    //             'success': function(data){
+    //             show_value_of_filter_price(data);
+    //             },
+    //             'error': function(){
+    //             }
+    //     });
+    // }
 
     function get_filter(selected_field){
         $.ajax({
@@ -409,6 +434,14 @@ llxFooter();
                 }
         });
     }
+
+    // function show_value_of_filter_price(data){
+	// 	console.log('je suis la');
+    //     $('#valeur').val(
+    //         data.data.FieldValue
+    //     );
+    // }
+
 
     function show_value_of_filter(data){
         $('#valeur').val(

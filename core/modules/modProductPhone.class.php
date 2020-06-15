@@ -89,7 +89,8 @@ class modProductPhone extends DolibarrModules
         //							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@productphone')) // Set here all workflow context managed by module
         //                        );
         $this->module_parts = array(
-            'css' => array('/productphone/css/mycss.css.php')
+			'css' => array('/productphone/css/mycss.css.php'),
+			'js' => array('/productphone/js/productphone.js')          // Set this to relative path of js file if module must load a js on all pages
         );
 
         // Data directories to create when module is enabled.
@@ -144,6 +145,7 @@ class modProductPhone extends DolibarrModules
         $this->tabs = array(
             'fiche_produit:+:fiche:mylangfile@productphone:$user->rights->productphone->read:/productphone/fiche.php?id=__ID__',
             'produit_associer:+:fichebrut:mylangfile@productphone:$user->rights->productphone->read:/productphone/fichebrut.php?id=__ID__',
+            'promotion:+:promotion:mylangfile@productphone:$user->rights->productphone->read:/productphone/promo.php?id=__ID__',
         );
 
         // Dictionaries

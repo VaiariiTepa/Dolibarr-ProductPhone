@@ -48,7 +48,8 @@ $t_input = generateInputHTMLofFilter($t_filter);
 
 // If action is equal to search else
 if($action == 'search') {
-    $t_search_productphone = $_productPhone->search_productphone($t_param);
+	$p_price_average = GETPOST('price_average');
+    $t_search_productphone = $_productPhone->search_productphone($t_param,$p_price_average);
 }
 
 //Si bouton reset selectionner, alors remetre a zero le filtre d'affichage
@@ -78,14 +79,15 @@ print '</table>';
 
 print '<div class="fiche">';
     print '<div class="fichecenter">';
-        print '<div class="fichehalfleft">';
+        print '<div class="fichehalfleft" width="500px;">';
             /* Assenceur catalogue */
             print '<div class="assenceur_catalogue" style="overflow: scroll; /*height: 800px;*/">';
                 //*********************************DIV OUVRANTE CATALOGUE***********************************************//
                 print '<div id="accordion">';
                 //*******************************************************************************************************//
-                    if($t_search_productphone){
-                        foreach ($t_search_productphone as $key=>$value){
+				if($t_search_productphone){
+					foreach ($t_search_productphone as $key=>$value){
+						
                             //==== TITRE ====//
                             print '<h4>';
                                 print '<div>';
@@ -147,7 +149,8 @@ print '<div class="fiche">';
                                         print '<tbody>';
                                         $parity = TRUE;
                                             foreach($value['DeviceAssociated'] AS $ref) {
-                                                if($ref['tosell'] === '1' ){
+												// Si le produit est a vendre, alors affiché												
+												if($ref['tosell'] === '1' ){
                                                     $parity =! $parity;
                                                     print '<tr class="'.($parity?'pair':'impair').'">';
                                                         print '<td width="25%">';
@@ -160,7 +163,14 @@ print '<div class="fiche">';
                                                             print price($ref['Prix_TTC']).' '.$langs->trans('SellingPriceTTC');
                                                         print '</td>';
                                                     print '</tr>';
-                                                }
+                                                }else{
+													print '<tr>';
+														print '<td><p>n\'est pas mis en vente</p></td>';
+														print '<td><p>n\'est pas mis en vente</p></td>';
+														print '<td><p>n\'est pas mis en vente</p></td>';
+													print '</tr>';
+												break;
+												}
                                             }
                                         print '</tbody>';
                                     print '</table>';
@@ -190,7 +200,17 @@ print '<div class="fiche">';
                 /* div form filtre */
                 print '<div class="filtre">';
                         //Formulaire filtre selectionner
-                        print '<form>';
+						print '<form>';
+						print 'prix';
+						print '<select name="price_average">';
+							print '<option></option>';
+							print '<option value="20000-30000">20 000 - 30 000</option>';
+							print '<option value="40000-50000">40 000 - 50 000</option>';
+							print '<option value="60000-70000">60 000 - 70 000</option>';
+							print '<option value="80000-90000">80 000 - 90 000</option>';
+							print '<option value="90000-100000">90 000 - 100 000</option>';
+							print '<option value="100000-600000"> > 100 000</option>';
+						print '</select>';
                         if($t_input){
                             foreach($t_input as $input){
                                 print $input['label'];
@@ -222,10 +242,6 @@ print '</div>';
 llxFooter();
 ?>
 <script>
-    var x = 0;
-
-    var largeur_fenetre = $(window).width();
-    var hauteur_fenetre = $(window).height();
 
     $(document).ready(function(){
         //ACCORDION

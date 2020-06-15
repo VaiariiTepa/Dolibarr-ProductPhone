@@ -459,8 +459,6 @@ class ProductPhone //extends CommonObject
         $resql = $this->db->query($sql);
         $commit = $this->db->commit($sql);
 
-        var_dump($resql);
-        var_dump($commit);
 
     }
 
@@ -489,8 +487,226 @@ class ProductPhone //extends CommonObject
 
         return $t_data;
 
-    }
+	}
+	
+	function create_fiche(
+		$brand
+		,$devicename
+		,$os_name
+		,$os_version
+		,$os_version_name
+		,$screen_resolution_width
+		,$screen_resolution_height
+		,$screen_resolution
+		,$phone_size
+		,$phone_weight
+		,$primary_camera_resolution
+		,$secondary_camera_resolution
+		,$cpu_number
+		,$cpu_speed
+		,$ram
+		,$interne_memory
+		,$connexion_type
+		,$battery_capacity
+		,$phone_color
+		,$sim1_format
+		,$sim2_format
+		,$dual_sim)
+	{
 
+        $sql1 = "INSERT INTO `" . MAIN_DB_PREFIX . "product_phone_raw`";
+		$sql1 .= "(`DeviceName`,`Brand`)";
+		$sql1 .= "VALUES (";
+		$sql1 .= "'$devicename','$brand'";
+		$sql1 .= ")";
+		$this->db->query($sql1);
+		
+		
+		$get_sql = "SELECT * FROM " . MAIN_DB_PREFIX . "product_phone_raw";
+		$get_sql .= " GROUP BY rowid DESC limit 1";
+		$t_row = $this->db->query($get_sql);
+		
+		foreach ($t_row as $row) {
+            $id_raw = $row['rowid'];
+		}
+		// var_dump($id_raw);
+		
+
+        $sql = "INSERT INTO `" . MAIN_DB_PREFIX . "product_phone`";
+        $sql .= "(`os_name`, `os_version`, `os_version_name`, `screen_resolution_width`, `screen_resolution_height`, `screen_resolution`, `phone_size`, `phone_weight`, `primary_camera_resolution`, `secondary_camera_resolution`, `cpu_number`, `cpu_speed`, `ram`, `interne_memory`, `connexion_type`, `battery_capacity`, `phone_color`, `sim1_format`, `sim2_format`, `dual_sim`,`fk_product_phone_raw`)";
+        $sql .= "VALUES (";
+		$sql .= "'$os_name','$os_version
+		','$os_version_name
+		','$screen_resolution_width
+		','$screen_resolution_height
+		','$screen_resolution
+		','$phone_size
+		','$phone_weight
+		','$primary_camera_resolution
+		','$secondary_camera_resolution
+		','$cpu_number
+		','$cpu_speed
+		','$ram
+		','$interne_memory
+		','$connexion_type
+		','$battery_capacity
+		','$phone_color
+		','$sim1_format
+		','$sim2_format
+		','$dual_sim
+		','$id_raw'";
+		$sql .= ")";
+		
+		
+        $this->db->query($sql);
+		
+
+
+	}
+
+	function create_fiche_capacity(
+		$p_fk_product_phone
+		,$p_memoire_interne
+		,$p_scenario_1
+		,$p_scenario_2
+		,$p_scenario_3
+		,$p_scenario_4
+		,$p_scenario_5
+		,$p_scenario_6
+		,$p_scenario_7
+	){
+
+		$sql1 = "INSERT INTO `" . MAIN_DB_PREFIX . "productphone_capacity`";
+		$sql1 .= "(`fk_product`,`fk_product_phone`, `capaciti`)";
+		$sql1 .= " VALUES ";
+		$sql1 .= "('$p_scenario_1','$p_fk_product_phone','$p_memoire_interne')";
+		if ($p_scenario_2){
+			$sql1 .= ",('$p_scenario_2','$p_fk_product_phone','$p_memoire_interne')";
+		}
+		if ($p_scenario_3){
+			$sql1 .= ",('$p_scenario_3','$p_fk_product_phone','$p_memoire_interne')";
+	}
+		if ($p_scenario_4){
+			$sql1 .= ",('$p_scenario_4','$p_fk_product_phone','$p_memoire_interne')";
+		}
+		if ($p_scenario_5){
+			$sql1 .= ",('$p_scenario_5','$p_fk_product_phone','$p_memoire_interne')";
+		}
+		if ($p_scenario_6){
+			$sql1 .= ",('$p_scenario_6','$p_fk_product_phone','$p_memoire_interne')";
+		}
+		if ($p_scenario_7){
+			$sql1 .= ",('$p_scenario_7','$p_fk_product_phone','$p_memoire_interne')";
+		}
+		
+		$this->db->query($sql1);
+		
+
+	}
+
+    function get_productPhone_ById($id)
+    {
+        $t_data = array();
+        // execution de la requete
+        $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "product_phone_raw AS ppr";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product_phone AS pp ON ppr.rowid = pp.fk_product_phone_raw";
+        $sql .= " WHERE ppr.rowid = ".$id;
+		
+		
+		$t_row = $this->db->query($sql);
+		
+        // insertion dans t_data[brand][device]
+        foreach ($t_row as $row) {
+			$t_data[$row['Brand']][$row['DeviceName']] = $row;
+		}
+		
+        return $t_data;
+
+	}
+	
+	function fetch_productPhone_ByCapacity($productphone_id)
+    {
+        $t_data = array();
+        // execution de la requete
+        $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "productphone_capacity AS ppc";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product_phone AS pp ON ppc.fk_product_phone = pp.rowid";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product AS p ON ppc.fk_product = p.rowid";
+		$sql .= " where ppc.fk_product_phone =".$productphone_id;
+		$sql .= " GROUP BY ppc.capaciti";
+		// var_dump($sql);
+		$t_row = $this->db->query($sql);
+		
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+
+    }
+    
+
+    function fetch_productPhone_price_ByCapacity($fk_productphone,$capaciti)
+    {
+        $t_data = array();
+        // execution de la requete
+        $sql = "SELECT p.price_ttc FROM " . MAIN_DB_PREFIX . "productphone_capacity AS ppc";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product_phone AS pp ON ppc.fk_product_phone = pp.rowid";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product AS p ON ppc.fk_product = p.rowid";
+		$sql .= " where ppc.fk_product_phone =".$fk_productphone;
+		$sql .= " and ppc.capaciti =".$capaciti;
+		$sql .= " and p.ref NOT LIKE '%-A%'";
+		$sql .= " GROUP BY p.price_ttc";
+		$sql .= " ORDER BY p.price_ttc";
+		$sql .= " DESC LIMIT 1";
+
+		$t_row = $this->db->query($sql);
+		
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+
+	}
+	
+
+	function fetch_productPhone_ByCapacity_promotion()
+    {
+        $t_data = array();
+        // execution de la requete
+        $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "productphone_capacity AS ppc";
+        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product_phone AS p ON ppc.fk_product = p.rowid GROUP BY ppc.capaciti";
+		// var_dump($sql);
+		
+		$t_row = $this->db->query($sql);
+		
+        // insertion dans t_data[brand][device]
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+
+	}
+	
+	function fetch_typePromotion()
+    {
+        $t_data = array();
+        // execution de la requete
+        $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "product_phone_type_promotion";
+		// var_dump($sql);
+		
+		$t_row = $this->db->query($sql);
+		
+        // insertion dans t_data[brand][device]
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+
+    }
+	
     /**
      * Recupere les donnee formater de llx_product_phone_raw join llx_product_phone en fonction du Id
      * @param $fk_productphone_raw
@@ -542,13 +758,16 @@ class ProductPhone //extends CommonObject
      * @param  array $t_param
      * @return array
      */
-    function search_productphone($t_param)
+    function search_productphone($t_param,$price_average)
     {
+
+		$price_explode = explode('-',$price_average);
+		
         if(is_string($t_param)){
           $t_param = array(
             'DeviceName' => $t_param,
           );
-        }
+		}
 
         //affichage des caractéristique par défault
         $t_keyDevice = array(
@@ -561,7 +780,8 @@ class ProductPhone //extends CommonObject
 
         //affichage des caractéristique en fonction des filtre selectionner
         $t_paramKey = array();
-        foreach ($t_param as $key=>$param) {
+
+		foreach ($t_param as $key=>$param) {
                     $t_paramKey[] =  $key;
         }
 
@@ -640,9 +860,17 @@ class ProductPhone //extends CommonObject
         $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "entrepot AS e ON ps.fk_entrepot = e.rowid";
         if($t_where){
           $sql .= " WHERE ".implode(' AND ',$t_where);
-        }
-        $sql .= " ORDER BY p.price_ttc ASC";
-
+		}
+		
+		if ($price_average) {
+			// A CHANGER ! Pprécisé le prix a nu et non selon les scenario
+			$sql .= " AND p.price_ttc >".$price_explode[0].".000";
+			$sql .= " AND p.price_ttc <".$price_explode[1].".000";
+		}
+		
+		
+		$sql .= " ORDER BY p.price_ttc ASC";
+		var_dump($sql);
         $resql = $this->db->query($sql);
 
         /* ================================================================= */
@@ -757,18 +985,20 @@ class ProductPhone //extends CommonObject
      */
     function search_product($search_brand, $categorie)
     {
+		$product_nu = explode(' ',$search_brand);
+
         $t_search_product = array();
 
-        $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "categorie_product as CP";
-        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "categorie as C on CP.fk_categorie = C.rowid";
-        $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product as P on CP.fk_product = P.rowid";
-        $sql .= " WHERE ";
-
-        if ($categorie > 0) {
-            $sql .= " CP.fk_categorie =" . $categorie . " AND P.label LIKE '%$search_brand%' OR P.ref LIKE '%$search_brand%'";
-        } else {
-            $sql .= "P.label LIKE '%$search_brand%' OR P.ref LIKE '%$search_brand%'";
-        }
+        $sql = "SELECT * FROM " . MAIN_DB_PREFIX . "product as P";
+		if (in_array('@',$product_nu)) {
+			array_shift($product_nu);
+			$product_nu= implode(' ',$product_nu);
+			$sql .= " WHERE";
+			$sql .= " P.label LIKE '%$product_nu%' and P.ref NOT LIKE '%-%'";
+		}else{
+			$sql .= " WHERE ";
+			$sql .= "P.label LIKE '%$search_brand%' OR P.ref LIKE '%$search_brand%'";
+		}
 
         $res = $this->db->query($sql);
 
@@ -789,11 +1019,12 @@ class ProductPhone //extends CommonObject
     {
         $t_search_product = array();
 
-        $sql = "SELECT fk_product,ref,label";
+        $sql = "SELECT fk_product,ref,label,price";
         $sql .= " FROM " . MAIN_DB_PREFIX . "product_phone_product AS ppp";
         $sql .= " JOIN " . MAIN_DB_PREFIX . "product AS p";
         $sql .= " ON ppp.fk_product = p.rowid";
-        $sql .= " WHERE fk_product_phone_raw = '" . $fk_product_phone_raw . "'";
+		$sql .= " WHERE fk_product_phone_raw = '" . $fk_product_phone_raw . "'";
+		$sql .= " GROUP BY price asc";
 //echo 'Affiche les Association '.$sql;
         $resql = $this->db->query($sql);
 
@@ -915,7 +1146,7 @@ class ProductPhone //extends CommonObject
      * @param $filter_value
      * @return array
      */
-    function gen_value_filter($filter_value){
+    	function gen_value_filter($filter_value){
         $t_filter_value = $this->get_filter_value($filter_value);
 
         $t_ProductPhone = array();
@@ -963,8 +1194,7 @@ class ProductPhone //extends CommonObject
             }
             $t_filter[ $row['field'] ] = $row;
         }
-//        var_dump('get_filter ');
-//        var_dump($t_filter);
+
         return $t_filter;
     }
 
@@ -992,11 +1222,200 @@ class ProductPhone //extends CommonObject
         } else {
             return 0;
         }
+	}
+	
+
+	/**
+	 * créer un type de promotion
+	 *
+	 * @param [string] $name_promotion
+	 * @return void
+	 */
+    function create_typePromotion($name_promotion)
+    {
+
+        $sql = "INSERT INTO " . MAIN_DB_PREFIX . "product_phone_type_promotion";
+        $sql .= " (`name`)";
+        $sql .= " value";
+        $sql .= " ('" . $name_promotion . "')";
+
+        $result = $this->db->query($sql);
+        if ($result > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+	}
+	
+	/**
+	 * créer une promotion en fonction de la capacité de stokage
+	 *
+	 * @param [string] $p_value_capaciti
+	 * @param [int] $p_rowid_type_promotion
+	 * @param [int] $p_old_price
+	 * @param [int] $p_new_price
+	 * @param [date] $p_start_time
+	 * @param [date] $p_end_time
+	 * @return void
+	 */
+    function create_promotion(
+		$p_value_capaciti
+		,$p_fk_product_phone
+		,$p_rowid_type_promotion
+		,$p_old_price
+		,$p_new_price
+		,$p_start_time
+		,$p_end_time
+	)
+    {
+
+        $sql = "INSERT INTO " . MAIN_DB_PREFIX . "product_phone_promotion";
+        $sql .= " (`fk_product_phone_type_promotion`,`old_price`,`promo_price`,`start_time`,`end_time`)";
+        $sql .= " value";
+        $sql .= " ('" . $p_rowid_type_promotion . "','".$p_old_price."','".$p_new_price."','".$p_start_time."','".$p_end_time."')";
+
+        $result = $this->db->query($sql);
+		
+		$rowid_last_promotion = $this->get_lastIdPromotion();
+		$t_product_phone_capacity = $this->get_product_capacity($p_value_capaciti,$p_fk_product_phone);
+
+		$this->create_capacity_promotion($rowid_last_promotion,$t_product_phone_capacity);
+		
+	}
+
+    /**
+     * créer une promotion pour une fiche téléphone en fonction de la capacité de stokage - llx_productphone_capacity_promotion
+     *
+     * @param [int] $rowid_last_promotion
+     * @param [array] $t_product_phone_capacity
+     * @return void
+     */
+	function create_capacity_promotion($rowid_last_promotion,$t_product_phone_capacity)
+	{
+		$t_sql_part = array();
+
+        $sql = "INSERT INTO " . MAIN_DB_PREFIX . "productphone_capacity_promotion";
+        $sql .= " (`fk_product_phone_promotion`,`fk_productphone_capacity`)";
+        $sql .= " value";
+
+		foreach ($t_product_phone_capacity as $value) {
+			foreach ($rowid_last_promotion as $v) {
+				
+				$t_sql_part[] = "(".$v['rowid'].','. $value["rowid"] . ")";
+			
+			}
+		}
+
+		$sql .= implode(',', $t_sql_part);
+		
+		$this->db->query($sql);
+	}
+	
+	/**
+	 * récupère le dèrnier rowid - product_phone_promotion
+	 *
+	 * @return void
+	 */
+	function get_lastIdPromotion(){
+        $t_data = array();
+        // execution de la requete
+        $sql = "SELECT `rowid` FROM " . MAIN_DB_PREFIX . "product_phone_promotion";
+		$sql .= " ORDER BY rowid DESC LIMIT 1";
+		$t_row = $this->db->query($sql);
+		
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
     }
+    
+    /**
+     * récupère les cards selon capacité promotion
+     *
+     * @param [type] $p_productphone
+     * @return void
+     */
+	function count_capacity_promotion($p_productphone){
+        
+        $t_data = array();
+
+        $sql = "SELECT DISTINCT pppr.fk_product_phone_type_promotion as type_promotion,pppr.promo_price AS promo_price,pppr.start_time AS start_time, pppr.end_time end_time,pptp.name as nom_promo,pc.capaciti as capaciti FROM " . MAIN_DB_PREFIX . "productphone_capacity_promotion  AS pcp";
+        $sql .= " LEFT JOIN llx_productphone_capacity AS pc ON pcp.fk_productphone_capacity = pc.rowid";
+        $sql.= " LEFT JOIN llx_product_phone_promotion AS pppr ON pcp.fk_product_phone_promotion = pppr.rowid";
+        $sql.= " LEFT JOIN llx_product_phone AS pp ON pc.fk_product_phone = pp.rowid";
+        $sql.= " LEFT JOIN llx_product AS p ON pc.fk_product = p.rowid";
+        $sql.= " LEFT JOIN llx_product_phone_raw AS ppr ON pp.fk_product_phone_raw = ppr.rowid";
+        $sql.= " LEFT JOIN llx_product_phone_type_promotion AS pptp ON pppr.fk_product_phone_type_promotion = pptp.rowid";
+        $sql.= " WHERE pc.fk_product_phone =".$p_productphone;
+        // $sql.= " and pppr.fk_product_phone_type_promotion != 1";
+        
+		$t_row = $this->db->query($sql);
+		
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+	}
+
+    /**
+     * Récupère la liste des type de promotion
+     *
+     * @return $t_data
+     */
+	function get_name_promotion()
+	{
+		$sql = "SELECT `name` FROM `llx_product_phone_type_promotion`";
+		$t_row = $this->db->query($sql);
+		
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+	}
+
+    /**
+     * Récupère la promotion que l'on souhaite imprimer
+     *
+     * @param [int] $p_value_capaciti
+     * @param [int] $p_rowid_type_promotion
+     * @param [int] $p_fk_product_phone
+     * @return $t_data
+     */
+	function get_product_capacity_promotion(
+		$p_value_capaciti
+		,$p_rowid_type_promotion
+		,$p_fk_product_phone
+	)
+	{
+		$t_data = array();
+
+		$sql = "SELECT *";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "productphone_capacity_promotion  AS pcp";
+        $sql .= " LEFT JOIN llx_productphone_capacity AS pc ON pcp.fk_productphone_capacity = pc.rowid";
+        $sql.= " LEFT JOIN llx_product_phone_promotion AS pppr ON pcp.fk_product_phone_promotion = pppr.rowid";
+        $sql.= " LEFT JOIN llx_product_phone AS pp ON pc.fk_product_phone = pp.rowid";
+        $sql.= " LEFT JOIN llx_product AS p ON pc.fk_product = p.rowid";
+        $sql.= " LEFT JOIN llx_product_phone_raw AS ppr ON pp.fk_product_phone_raw = ppr.rowid";
+        $sql.= " LEFT JOIN llx_product_phone_type_promotion AS pptp ON pppr.fk_product_phone_type_promotion = pptp.rowid";
+        $sql.= " WHERE pppr.fk_product_phone_type_promotion = ".$p_rowid_type_promotion;
+        $sql.= " and pc.capaciti = ".$p_value_capaciti;
+        $sql.= " and pc.fk_product_phone = ".$p_fk_product_phone;
+		// $sql.= " ORDER BY price_ttc asc";
+		$t_row = $this->db->query($sql);
+		
+        foreach ($t_row as $row) {
+			$t_data[] = $row;
+		}
+		
+        return $t_data;
+	}
+
 
 
     /**
-     * @author Vaiarii
      * créer un nouveau filtre dans llx_c_product_phone_filter
      * @param $field
      * @param $type
@@ -1046,7 +1465,61 @@ class ProductPhone //extends CommonObject
             return 0;
         }
 
-    }
+	}
+	
+	function update_productphone(
+		$brand
+		,$devicename
+		,$os_name
+		,$os_version
+		,$os_version_name
+		,$screen_resolution_width
+		,$screen_resolution_height
+		,$screen_resolution
+		,$phone_size
+		,$phone_weight
+		,$primary_camera_resolution
+		,$secondary_camera_resolution
+		,$cpu_number
+		,$cpu_speed
+		,$ram
+		,$interne_memory
+		,$connexion_type
+		,$battery_capacity
+		,$phone_color
+		,$sim1_format
+		,$sim2_format
+		,$dual_sim
+		,$rowid
+	)
+	{
+		$sql = "UPDATE " . MAIN_DB_PREFIX . "product_phone SET ";
+		// $sql = "brand = '".."'";
+		// $sql .= "devicename = '".."'";
+		$sql .= "os_name = '".$os_name."'";
+		$sql .= ",os_version = '".$os_version."'";
+		$sql .= ",os_version_name = '".$os_version_name."'";
+		$sql .= ",screen_resolution_width = '".$screen_resolution_width."'";
+		$sql .= ",screen_resolution_height = '".$screen_resolution_height."'";
+		$sql .= ",screen_resolution = '".$screen_resolution."'";
+		$sql .= ",phone_size = '".$phone_size."'";
+		$sql .= ",phone_weight = '".$phone_weight."'";
+		$sql .= ",primary_camera_resolution = '".$primary_camera_resolution."'";
+		$sql .= ",secondary_camera_resolution = '".$secondary_camera_resolution."'";
+		$sql .= ",cpu_number = '".$cpu_number."'";
+		$sql .= ",cpu_speed = '".$cpu_speed."'";
+		$sql .= ",ram = '".$ram."'";
+		$sql .= ",interne_memory = '".$interne_memory."'";
+		$sql .= ",connexion_type = '".$connexion_type."'";
+		$sql .= ",battery_capacity = '".$battery_capacity."'";
+		$sql .= ",phone_color = '".$phone_color."'";
+		$sql .= ",sim1_format = '".$sim1_format."'";
+		$sql .= ",sim2_format = '".$sim2_format."'";
+		$sql .= ",dual_sim = '".$dual_sim."'";
+		$sql .= " WHERE rowid = '" . $rowid . "'";
+
+        $this->db->query($sql);
+	}
 
     /**
      * @author Vaiarii
@@ -1165,7 +1638,6 @@ class ProductPhone //extends CommonObject
         } else {
           $sql.= " ORDER BY " . $filter_value;
         }
-        //echo $sql;
 
         $resql = $this->db->query($sql);
         if ($resql) {
@@ -1176,7 +1648,32 @@ class ProductPhone //extends CommonObject
             }
         }
         return $t_filter_value;
-    }
+	}
+	
+	function gen_value_filter_price(){
+
+		$t_field_filter = array();
+
+		$sql = " SELECT DISTINCT price_ttc FROM " . MAIN_DB_PREFIX . "product_phone_product as ppp";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product_phone_raw AS ppr ON ppp.fk_product_phone_raw = ppr.rowid";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "product AS p ON ppp.fk_product = p.rowid";
+
+		
+        $resql = $this->db->query($sql);
+
+		if ($resql) {
+
+			foreach ($resql as $key=>$value) {
+				
+                   $t_field_filter[] = $value['price_ttc'];
+			}
+             
+		}
+		
+        return $t_field_filter;
+
+
+	}
 
     /**
      * TEST

@@ -117,27 +117,42 @@ switch($p_action){
      */
     case 'get_filter':
         $_ProductPhone = new ProductPhone($db);
-        $filter_value = GETPOST('get_value_filter');
+		$filter_value = GETPOST('get_value_filter');
+		
         $t_ProductPhone = $_ProductPhone->gen_value_filter($filter_value);
+		
+		if ($t_ProductPhone){
+            $t_response['data']['FieldValue'] = json_encode($t_ProductPhone);
+            $t_response['status'] = 'succes';
+        }else {
+            $t_response['status'] = 'error';
+        }
+		break;
+		
+    case 'get_filter_price':
+        $_ProductPhone = new ProductPhone($db);
+        $filter_value = GETPOST('get_value_filter_price');
+        $t_ProductPhone = $_ProductPhone->gen_value_filter_price();
         if ($t_ProductPhone){
             $t_response['data']['FieldValue'] = json_encode($t_ProductPhone);
             $t_response['status'] = 'succes';
         }else {
             $t_response['status'] = 'error';
         }
+		break;
+		
+    case 'get_price_byCapacity':
+        $_ProductPhone = new ProductPhone($db);
+        $fk_productphone = GETPOST('fk_productphone');
+        $capaciti = GETPOST('capaciti');
+        $t_ProductPhone = $_ProductPhone->fetch_productPhone_price_ByCapacity($fk_productphone,$capaciti);
+        if ($t_ProductPhone){
+            $t_response['data'] = $t_ProductPhone;
+            // $t_response['status'] = 'succes';
+        }else {
+            $t_response['status'] = 'error';
+        }
         break;
-//
-//    case 'show_filter_selected':
-//        $_ProductPhone = new ProductPhone($db);
-//        $filter = GETPOST('filter');
-//        $t_ProductPhone = $_ProductPhone->search_productphone($filter);
-//        if ($t_ProductPhone){
-//            $t_response['data']['response'] = json_encode($t_ProductPhone);
-//            $t_response['status'] = 'succes';
-//        }else {
-//            $t_response['status'] = 'error';
-//        }
-//        break;
 }
 
 echo json_encode($t_response);

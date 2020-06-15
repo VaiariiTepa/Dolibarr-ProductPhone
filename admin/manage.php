@@ -31,7 +31,6 @@ if (false === (@include '../../main.inc.php')) {  // From htdocs directory
 
 global $langs, $user;
 
-
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/mymodule.lib.php';
@@ -70,7 +69,7 @@ if($p_product){
     $_productPhone = new ProductPhone($db);
     $t_search_product = $_productPhone->search_product($p_product,$p_categorie);
     if(empty($t_search_product)){
-        //Message d'erreur
+        var_dump('error');
     }else{
         foreach($t_search_product as $resulta){
             $t_list_product[] = $resulta;

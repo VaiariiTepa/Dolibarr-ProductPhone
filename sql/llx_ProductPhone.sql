@@ -161,3 +161,114 @@ CREATE TABLE IF NOT EXISTS `llx_c_product_phone_filter` (
   `sort_order` int(11) NOT NULL,
   PRIMARY KEY (`rowid`)
 );
+
+
+
+--
+-- Structure de la table `llx_productphone_capacity`
+--
+
+CREATE TABLE `llx_productphone_capacity` (
+  `rowid` int(11) NOT NULL,
+  `fk_product` int(11) NOT NULL,
+  `fk_product_phone` int(11) NOT NULL,
+  `capaciti` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `llx_productphone_capacity_promotion`
+--
+
+CREATE TABLE `llx_productphone_capacity_promotion` (
+  `rowid` int(11) NOT NULL,
+  `fk_productphone_capacity` int(11) NOT NULL,
+  `fk_product_phone_promotion` int(11) NOT NULL,
+  `tms` int(11) NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `llx_product_phone_promotion`
+--
+
+CREATE TABLE `llx_product_phone_promotion` (
+  `rowid` int(11) NOT NULL,
+  `fk_product_phone_type_promotion` int(11) NOT NULL,
+  `old_price` int(11) DEFAULT NULL,
+  `promo_price` int(11) DEFAULT NULL,
+  `start_time` date DEFAULT NULL,
+  `end_time` date DEFAULT NULL,
+  `tms` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `llx_product_phone_type_promotion`
+--
+
+CREATE TABLE `llx_product_phone_type_promotion` (
+  `rowid` int(11) NOT NULL,
+  `name` varchar(240) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `llx_productphone_capacity`
+--
+ALTER TABLE `llx_productphone_capacity`
+  ADD PRIMARY KEY (`rowid`);
+
+--
+-- Index pour la table `llx_productphone_capacity_promotion`
+--
+ALTER TABLE `llx_productphone_capacity_promotion`
+  ADD PRIMARY KEY (`rowid`);
+
+--
+-- Index pour la table `llx_product_phone_promotion`
+--
+ALTER TABLE `llx_product_phone_promotion`
+  ADD PRIMARY KEY (`rowid`);
+
+--
+-- Index pour la table `llx_product_phone_type_promotion`
+--
+ALTER TABLE `llx_product_phone_type_promotion`
+  ADD PRIMARY KEY (`rowid`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `llx_productphone_capacity`
+--
+ALTER TABLE `llx_productphone_capacity`
+  MODIFY `rowid` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `llx_productphone_capacity_promotion`
+--
+ALTER TABLE `llx_productphone_capacity_promotion`
+  MODIFY `rowid` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `llx_product_phone_promotion`
+--
+ALTER TABLE `llx_product_phone_promotion`
+  MODIFY `rowid` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `llx_product_phone_type_promotion`
+--
+ALTER TABLE `llx_product_phone_type_promotion`
+  MODIFY `rowid` int(11) NOT NULL AUTO_INCREMENT;
+SET FOREIGN_KEY_CHECKS=1;
+COMMIT;
